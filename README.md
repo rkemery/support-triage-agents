@@ -155,6 +155,7 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 - **50 tickets.** Intervals are wide and small differences are invisible. The minimum detectable effect is printed next to every comparison.
 - **A generous simulated customer.** Any clarifying question gets every hidden fact at once. A real customer might answer only what was asked. An LLM customer simulator was left out to keep replays exact.
 - **A perfect reviewer.** The oracle never errs, so this measures what reaches the reviewer, not how a tired person would judge it.
+- **A truncated reply breaks replay for its ticket.** The harness cache stores only complete replies, so a live reply cut off at `max_output_tokens` is used once and not cached, and `make eval-replay` stops with a cache miss on that call. The fix is to raise that role's output cap in `llm.py` and rerun live, where the cache covers everything else.
 - **One model and one prompt set.** gpt-6-luna at reasoning effort none, with no prompt tuning on these tasks. The JSON action protocol may understate what native tool calling would do.
 - **Latency is model time only.** Tool calls and local compute (milliseconds here) are left out. Replayed runs report the latency measured on the original call.
 - **A reimplemented bank.** It agrees with the reference model on every gold path and on the 17 wrong moves, not on every possible sequence.

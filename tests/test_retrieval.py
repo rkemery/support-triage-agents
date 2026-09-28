@@ -60,8 +60,8 @@ def test_hybrid_top8_chunks_match_the_rag_repo(setup):
         same_set += set(top8) == set(row["top8_chunks"])
     assert len(encoder.rows) == 200
     assert same_set == 200
-    # One question swaps two chunks whose scores tie to float precision.
-    assert exact >= 199
+    # One question swaps two chunks whose scores tie to float precision (another BLAS may differ).
+    assert exact >= 198
 
 
 def test_hybrid_and_dense_article_rankings_match_on_test(setup):
@@ -80,7 +80,9 @@ def test_hybrid_and_dense_article_rankings_match_on_test(setup):
             assert set(mine[:9]) <= set(gold[name]), (name, row["question_id"])
             exact[name] += mine == gold[name]
     # The one difference in each is a v1/v2 pair of near-identical articles at rank 9 or 10.
-    assert exact == {"hybrid": 129, "dense": 129}
+    # Float ties can fall either way on another BLAS, so this is a floor, not an equality.
+    assert exact["hybrid"] >= 128
+    assert exact["dense"] >= 128
 
 
 def test_bm25_scores_rank_the_same_articles(setup):
