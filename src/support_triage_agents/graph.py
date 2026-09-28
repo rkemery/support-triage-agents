@@ -52,10 +52,13 @@ from support_triage_agents.schemas import (
     ToolCall,
 )
 from support_triage_agents.tools import (
+    ASK_TOOL,
     ROLE_TOOLS,
     SEARCH_TOOL,
     CustomerSimulator,
     Toolbox,
+    channel_line,
+    excerpt_text,
     render_result,
 )
 
@@ -168,7 +171,10 @@ def guarded(fn: Callable[[TicketState, Usage], dict[str, Any]]) -> Node:
 
 
 def _ticket_block(state: TicketState) -> str:
-    parts = [f"Ticket from customer {state['customer_id']}:\n{state['ticket_text']}"]
+    parts = [
+        channel_line(state["customer_id"]),
+        f"Ticket from customer {state['customer_id']}:\n{state['ticket_text']}",
+    ]
     clar = state.get("clarification")
     if clar:
         parts.append(f"We asked: {clar['question']}\nThe customer answered: {clar['answer']}")
@@ -226,11 +232,12 @@ def build_graph(rt: Runtime, *, with_compliance: bool) -> StateGraph:
         research = ResearchNotes(**state["research"])
         lines = [
             _ticket_block(state),
+            f"Customer profile: {dump(state['profile'])}",
             f"Intake ({state['intake']['category']}): {state['intake']['summary']}",
             f"Intake risk flags: {state['intake']['risk_flags']}",
             "Policy excerpts from the researcher:",
         ]
-        lines += [f"[{e.article_id}] {e.title}\n{e.text}" for e in research.excerpts]
+        lines += [excerpt_text(e) for e in research.excerpts]
         reviews = state.get("reviews") or []
         if reviews and not reviews[-1]["approve"]:
             lines.append(
@@ -261,6 +268,8 @@ def build_graph(rt: Runtime, *, with_compliance: bool) -> StateGraph:
             }
         elif n_calls >= MAX_RESOLVER_TOOL_CALLS:
             result = {"ok": False, "error": "tool call limit reached, write your plan now"}
+        elif step.tool == ASK_TOOL:
+            return _resolver_ask(state, step, turns)
         else:
             result = rt.toolbox.call("resolver", step.tool, step.args)
         turns += [
@@ -269,9 +278,29 @@ def build_graph(rt: Runtime, *, with_compliance: bool) -> StateGraph:
         ]
         return {"resolver_turns": turns}
 
+    def _resolver_ask(state: TicketState, step: ToolCall, turns: list) -> dict[str, Any]:
+        """One question per ticket, shared with intake (the single agent gets one too)."""
+        update: dict[str, Any] = {}
+        if state.get("clarification"):
+            result: dict[str, Any] = {"ok": False, "error": "the customer was already asked"}
+        else:
+            result = rt.toolbox.call("resolver", ASK_TOOL, step.args)
+            question = str(step.args.get("question", ""))
+            if result["ok"]:
+                update["clarification"] = Clarification(
+                    question=question, answer=str(result["result"])
+                ).model_dump()
+        turns = [
+            *turns,
+            {"role": "assistant", "content": dump(step)},
+            {"role": "user", "content": f"Tool result: {render_result(result)}"},
+        ]
+        return {**update, "resolver_turns": turns}
+
     def compliance(state: TicketState, usage: Usage) -> dict[str, Any]:
         plan = ActionPlan(**state["plan"])
         review_input = ComplianceInput(
+            channel=channel_line(state["customer_id"]),
             ticket_text=state["ticket_text"],
             clarification=Clarification(**state["clarification"])
             if state.get("clarification")

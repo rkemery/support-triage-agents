@@ -26,6 +26,7 @@ from support_triage_agents.prompts import render
 from support_triage_agents.retrieval import HybridRetriever
 from support_triage_agents.schemas import ProposedAction, Strict
 from support_triage_agents.scoring import sandbox_apply
+from support_triage_agents.tools import channel_line, excerpt_text
 from support_triage_agents.vendor import REPO_ROOT
 
 CROSSCHECK_PATH = REPO_ROOT / "results" / "crosscheck.jsonl"
@@ -50,12 +51,10 @@ def _context(task: Task, retriever: HybridRetriever) -> str:
                 "transactions": bank.list_transactions(limit=100),
                 "disputes": bank.list_disputes(),
             }
-    excerpts = [
-        f"[{h.chunk.article_id}] {h.chunk.title}\n{h.chunk.text}"
-        for h in retriever.search(task.ticket_text, top_k=EXCERPTS)
-    ]
+    excerpts = [excerpt_text(h.chunk) for h in retriever.search(task.ticket_text, top_k=EXCERPTS)]
     return "\n\n".join(
         [
+            channel_line(task.customer_id),
             f"Ticket from customer {task.customer_id}:\n{task.ticket_text}",
             "What the customer would say if asked: " + " ".join(task.hidden_facts),
             f"Account records: {dump(records)}",

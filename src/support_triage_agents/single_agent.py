@@ -19,7 +19,13 @@ from support_triage_agents.graph import Runtime, guarded
 from support_triage_agents.llm import Usage, dump, merge_usage
 from support_triage_agents.prompts import render
 from support_triage_agents.schemas import AgentStep, FinalReply, ToolCall
-from support_triage_agents.tools import ASK_TOOL, MAX_ASKS, ROLE_TOOLS, render_result
+from support_triage_agents.tools import (
+    ASK_TOOL,
+    MAX_ASKS,
+    ROLE_TOOLS,
+    channel_line,
+    render_result,
+)
 
 
 class AgentState(TypedDict, total=False):
@@ -52,7 +58,7 @@ def build_single_agent(rt: Runtime) -> StateGraph:
     def agent(state: AgentState, usage: Usage) -> dict[str, Any]:
         profile = state.get("profile") or rt.bank.get_customer_profile()
         opening = (
-            f"Customer profile: {dump(profile)}\n\n"
+            f"Customer profile: {dump(profile)}\n\n{channel_line(state['customer_id'])}\n\n"
             f"Ticket from customer {state['customer_id']}:\n{state['ticket_text']}"
         )
         messages = [{"role": "user", "content": opening}, *state.get("turns", [])]

@@ -56,6 +56,7 @@ class Excerpt(Strict):
     chunk_id: str
     article_id: str
     title: str
+    effective_date: str
     text: str
 
 
@@ -121,6 +122,7 @@ AgentStep = TypeAdapter(Annotated[ToolCall | FinalReply, Field(discriminator="ty
 class ComplianceInput(Strict):
     """Everything the compliance reviewer sees: ticket facts, the draft, policy excerpts."""
 
+    channel: str
     ticket_text: str
     clarification: Clarification | None
     customer_profile: dict[str, Any]

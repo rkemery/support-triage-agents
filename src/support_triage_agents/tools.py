@@ -38,7 +38,7 @@ ASK_TOOL = "ask_customer"
 ROLE_TOOLS: dict[str, frozenset[str]] = {
     "intake": frozenset(),
     "researcher": frozenset({SEARCH_TOOL}),
-    "resolver": READ_TOOLS,
+    "resolver": READ_TOOLS | {ASK_TOOL},
     "compliance": frozenset(),
     "executor": WRITE_TOOLS,
     "single_agent": READ_TOOLS | WRITE_TOOLS | {SEARCH_TOOL, ASK_TOOL},
@@ -160,6 +160,7 @@ class Toolbox:
                 "chunk_id": h.chunk.chunk_id,
                 "article_id": h.chunk.article_id,
                 "title": h.chunk.title,
+                "effective_date": h.chunk.effective_date,
                 "text": h.chunk.text,
             }
             for h in hits
@@ -167,6 +168,26 @@ class Toolbox:
 
     def ask(self, question: str) -> str:
         return self.customer.answer(str(question))
+
+
+def channel_line(customer_id: str) -> str:
+    """How every ticket arrives, as the scenario defines it. The same line for every agent.
+
+    It describes the session, not the writer: a relative typing in the account
+    holder's app is still someone who is not the account holder.
+    """
+    return (
+        f"Channel: in-app chat, sent from the signed-in, identity-verified app session of "
+        f"customer {customer_id}."
+    )
+
+
+def excerpt_text(excerpt: Any) -> str:
+    """A help-center excerpt as agents see it, with its effective date, as the RAG repo shows it."""
+    return (
+        f"[{excerpt.article_id}] {excerpt.title} (effective {excerpt.effective_date})\n"
+        f"{excerpt.text}"
+    )
 
 
 def render_result(result: dict[str, Any]) -> str:

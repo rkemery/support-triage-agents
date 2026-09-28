@@ -103,8 +103,8 @@ What each agent may call and see is enforced in code, not only asked for in a pr
 |---|---|---|
 | Intake | none | the ticket and the customer's profile |
 | Researcher | `search_help_center` | the ticket and the intake summary, no account data |
-| Resolver | read-only account tools | the ticket, intake summary, policy excerpts, its own tool results |
-| Compliance reviewer | none | the ticket, the customer's answer to a clarifying question if one was asked, the profile, the records the plan points at, the policy excerpts and the draft |
+| Resolver | read-only account tools and `ask_customer` | the ticket, the profile, intake summary, policy excerpts, its own tool results |
+| Compliance reviewer | none | the channel line, the ticket, the customer's answer to a clarifying question if one was asked, the profile, the records the plan points at, the policy excerpts and the draft |
 | Executor | the nine write tools | the approved plan. It is code, not a model, and refuses a plan whose actions changed after approval. |
 | Single agent (arm A) | all of the above plus `ask_customer` | everything it asks for |
 
@@ -133,6 +133,8 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 ## Design decisions
 
 - **Agents that differ in permissions and context, not just prompts.** The resolver has no write tools and the executor has no model. The compliance reviewer's input is a Pydantic model with no field for the resolver's tool transcript or for anything the customer has not said, so it judges the plan on the facts a reviewer would have. Tests check these boundaries by inspecting what each node is given.
+- **The same scenario facts for every agent.** Every agent in every arm gets one identical line saying the ticket arrived in in-app chat from the customer's own signed-in, identity-verified session. The support rules say support acts only in that session, and the bank's tools assume it, so without the line an agent can't tell whether it may act at all. The line describes the session, not the writer, so a husband or daughter typing in the account holder's app still reads as someone who is not the account holder. Excerpts carry their effective date, as in the RAG repo, because the snapshot holds superseded versions whose text doesn't say they are old.
+- **One clarifying question per ticket, in both designs.** The single agent can ask after reading the account. In the graph, intake can ask, and so can the resolver if intake didn't, since intake can't see the cards or transactions that make a request ambiguous ("Please freeze my card" from someone with two cards). The answer reaches every later agent, the compliance reviewer included.
 - **Typed handoffs.** Every model reply is parsed into a Pydantic model (`IntakeResult`, `ResearchQueries`, `ActionPlan`, `ComplianceReview`). A reply that doesn't parse gets one repair turn with the validation error, then the ticket ends as an agent failure.
 - **Side effects only after the interrupt, and idempotent anyway.** LangGraph re-runs a node from its first line when it resumes after `interrupt()`, and its docs advise idempotent side effects or moving them after the interrupt into their own node ([LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)). `human_review` does nothing before its `interrupt()`, the writes live in a separate executor node, and every write is keyed on (ticket, sha256 of the action) in the same SQLite transaction as the change, so a crashed executor that re-runs applies each write once. Checkpoints are written with `durability="sync"`, so the checkpoint before the executor is on disk before the executor starts.
 - **A bank that checks the dataset.** The dataset ships a reference model of what each support action does. This repo's bank is a separate SQLite implementation of the same rules (integer cents, foreign keys, a log of every attempt). It reproduces all 50 gold end states from the gold actions and refuses the 17 wrong moves the dataset's own tests use. Share data, not code.
@@ -146,6 +148,7 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 
 - **A wrapper's type hint emptied the single agent's memory.** Model-calling nodes share a small wrapper that catches unparseable replies. Its `state` parameter was annotated with the graph's state type, and LangGraph reads a node's annotation as its input schema, so the single agent's node silently received none of its own keys and re-sent the opening message until the 16-call budget ran out. The scripted end-to-end run caught it (0 of 50 tickets finished). The wrapper now has no annotation, and a test runs every arm over all 50 tickets.
 - **BM25-only rankings can't be matched in order.** Many BM25 scores tie exactly, for example an old and a new version of an article that share every query term, and Qdrant breaks ties in its own internal order. On the 130 scored RAG test questions, the top-10 article order from this repo's BM25 matched the RAG repo's in 94 cases. Every mismatch was a tie. The hybrid ranking the Researcher uses is not affected in practice, so the tests compare BM25 on the top article and the top-10 set, and hybrid on exact order.
+- **Agents that didn't know where the ticket came from.** The first live smoke run (two tickets, one trial) failed arm B on the lost-card ticket for a setup reason. Nothing in any agent's context said the message came from the customer's own signed-in session, so the compliance reviewer sent back a correct plan because it couldn't confirm the session, then approved an empty plan telling the customer to sign in. Its other objection, that the card must be frozen before it is reported lost, was harmless: a reported card is cancelled for good, so freeze then report ends in the same bank state as report alone, in the dataset's reference model and in this bank, and the scorer counts either as a success. Every agent now gets the channel line, and the resolver gets the profile and the right to ask, which the single agent already had.
 - **Scoring on the end state alone.** An early draft of the scorer counted any ticket whose bank ended in the gold state. It would have scored a refused out-of-window dispute as a resolved ticket. That is now a test for every arm.
 
 ## Limitations
@@ -156,6 +159,8 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 - **A generous simulated customer.** Any clarifying question gets every hidden fact at once. A real customer might answer only what was asked. An LLM customer simulator was left out to keep replays exact.
 - **A perfect reviewer.** The oracle never errs, so this measures what reaches the reviewer, not how a tired person would judge it.
 - **A truncated reply breaks replay for its ticket.** The harness cache stores only complete replies, so a live reply cut off at `max_output_tokens` is used once and not cached, and `make eval-replay` stops with a cache miss on that call. The fix is to raise that role's output cap in `llm.py` and rerun live, where the cache covers everything else.
+- **Remaining differences between the arms.** The single agent can search the help center as often as it likes, while the graph's resolver works from the researcher's excerpts (up to 3 queries, 8 excerpts). The compliance reviewer sees only the records a plan points at, so it can't check an action that is missing against records nobody cited. Both follow from the plan's roles and were left as they are.
+- **One action per reply.** When a reply holds more than one JSON object (a tool call followed by a plan written before the tool answered), only the first counts.
 - **One model and one prompt set.** gpt-6-luna at reasoning effort none, with no prompt tuning on these tasks. The JSON action protocol may understate what native tool calling would do.
 - **Latency is model time only.** Tool calls and local compute (milliseconds here) are left out. Replayed runs report the latency measured on the original call.
 - **A reimplemented bank.** It agrees with the reference model on every gold path and on the 17 wrong moves, not on every possible sequence.
@@ -168,13 +173,13 @@ Estimated before any live call by `make estimate`, which runs every arm over all
 
 | Stage | Model | Calls | Input tokens | Output tokens | Expected $ | Heavier path $ | DollarCap worst case $ | Minutes at default quota |
 |---|---|---|---|---|---|---|---|---|
-| A: single agent (k=4) | gpt-6-luna | 632 | 953,838 | 44,240 | 0.12 | 0.23 | 0.67 | 104 |
-| B: full graph (k=4) | gpt-6-luna | 1,000 | 1,131,984 | 106,000 | 0.17 | 0.33 | 0.74 | 117 |
-| C: graph without compliance reviewer (k=2) | gpt-6-luna | 400 | 403,042 | 45,000 | 0.06 | 0.13 | 0.28 | 44 |
-| Gold cross-check (second model) | gpt-5-mini | 50 | 106,141 | 45,000 | 0.12 | 0.23 | 0.31 | 14 |
-| Total | | 2,082 | 2,595,005 | 240,240 | 0.46 | 0.93 | 2.00 | 278 |
+| A: single agent (k=4) | gpt-6-luna | 632 | 985,348 | 44,240 | 0.12 | 0.24 | 0.68 | 106 |
+| B: full graph (k=4) | gpt-6-luna | 1,000 | 1,223,990 | 106,000 | 0.18 | 0.35 | 0.78 | 124 |
+| C: graph without compliance reviewer (k=2) | gpt-6-luna | 400 | 442,544 | 45,000 | 0.07 | 0.13 | 0.30 | 47 |
+| Gold cross-check (second model) | gpt-5-mini | 50 | 109,128 | 45,000 | 0.12 | 0.23 | 0.31 | 14 |
+| Total | | 2,082 | 2,761,010 | 240,240 | 0.48 | 0.96 | 2.06 | 290 |
 
-At the day-1 capacities (20K tokens per minute on gpt-6-luna and gpt-5-mini) the run needs about 4.6 hours of wall time. Raise the capacities and set `TRIAGE_TPM` to match to go faster.
+At the day-1 capacities (20K tokens per minute on gpt-6-luna and gpt-5-mini) the run needs about 4.8 hours of wall time. Raise the capacities and set `TRIAGE_TPM` to match to go faster.
 
 `make eval-live` runs everything in one process under one hard cap of $3.00 (`make eval-live CAP=...` to change it), about three times the heavier-path estimate. A refused call stops the run, and cached calls cost nothing when it is started again.
 

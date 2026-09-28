@@ -10,19 +10,21 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.types import Command
 from llm_eval_harness import FakeClient, ModelRequest
 
-from support_triage_agents.bank import Bank
+from support_triage_agents.bank import Bank, state_matches
 from support_triage_agents.data import load_facts, load_seed, load_tasks, task_by_id
 from support_triage_agents.graph import Runtime, build_graph, initial_state
 from support_triage_agents.llm import STEP_BUDGET
 from support_triage_agents.retrieval import cached_retriever
 from support_triage_agents.runner import ARMS, run_ticket
 from support_triage_agents.schemas import ComplianceInput
+from support_triage_agents.scoring import GoldOracle, sandbox_apply, score_ticket
 from support_triage_agents.scripted import scripted_client, scripted_reply
 from support_triage_agents.tools import (
     ROLE_TOOLS,
     CustomerSimulator,
     Toolbox,
     ToolPermissionError,
+    channel_line,
 )
 
 TASKS = load_tasks()
@@ -155,7 +157,8 @@ def test_role_permissions():
     assert ROLE_TOOLS["intake"] == frozenset()
     assert ROLE_TOOLS["researcher"] == {"search_help_center"}
     assert not ROLE_TOOLS["resolver"] & ROLE_TOOLS["executor"]
-    assert "ask_customer" not in ROLE_TOOLS["resolver"]
+    assert ROLE_TOOLS["resolver"] - {"ask_customer"} <= ROLE_TOOLS["single_agent"]
+    assert not ROLE_TOOLS["resolver"] & ROLE_TOOLS["executor"]
 
 
 def test_toolbox_enforces_permissions(retriever, tmp_path):
@@ -194,6 +197,7 @@ def test_resolver_asking_for_a_write_tool_gets_an_error_not_a_write(retriever, t
 def test_compliance_input_has_no_transcript_or_hidden_facts():
     fields = set(ComplianceInput.model_fields)
     assert fields == {
+        "channel",
         "ticket_text",
         "clarification",
         "customer_profile",
@@ -247,3 +251,67 @@ def test_unparseable_reply_gets_one_repair_then_fails(retriever, tmp_path, saver
     assert rec.meta["outcome"] == "agent_error"
     assert rec.meta["llm_calls"] == 2
     assert "incomplete" in rec.meta["failure_categories"]
+
+
+@pytest.mark.parametrize("arm", ["A", "B", "C"])
+def test_every_agent_sees_the_same_channel_line(arm, retriever, tmp_path, saver):
+    task = task_by_id("task-035")  # someone typing in the account holder's app for her
+    client = scripted_client()
+    _run(arm, task, client, retriever, tmp_path, saver)
+    line = channel_line(task.customer_id)
+    assert client.calls
+    for request in client.calls:
+        assert line in json.dumps(request.input, ensure_ascii=False), request.instructions[:40]
+    assert "Delphine's husband Marc" in json.dumps(client.calls[0].input)
+
+
+def test_freezing_before_reporting_lost_is_the_same_end_state():
+    """A reported card is cancelled for good, so a freeze before the report leaves no trace.
+
+    The dataset's reference model and this bank both overwrite the card status on report."""
+    task = task_by_id("task-001")
+    plan = [{"action": "freeze_card", "args": {"card_id": "card_001p"}}, *task.gold_actions]
+    result = sandbox_apply(task, plan)
+    assert not result.refusals
+    assert state_matches(result.diff, task.gold_final_state)
+    score = score_ticket(task, result.diff, plan, [], rejected=False, completed=True)
+    assert score.success
+    oracle = GoldOracle(task)
+    actions = [{**a, "why": ""} for a in plan]
+    payload = {"plan": {"actions": actions, "reply_to_customer": "ok"}}
+    assert oracle.review(payload).decision == "approve"
+
+
+def test_resolver_can_ask_once_and_its_answer_reaches_the_reviewer(retriever, tmp_path, saver):
+    task = task_by_id("task-005")  # "Please freeze my card." with two cards
+    tasks = {t.ticket_text: t for t in TASKS}
+    asks = {"n": 0}
+
+    def resolver_asks(request: ModelRequest) -> str:
+        role = request.instructions or ""
+        if role.startswith("You are the intake agent"):
+            reply = json.loads(scripted_reply(request, tasks))
+            reply.update(needs_clarification=False, clarifying_question=None)
+            return json.dumps(reply)
+        if role.startswith("You are the resolver agent") and asks["n"] < 2:
+            asks["n"] += 1
+            return json.dumps(
+                {"type": "tool", "tool": "ask_customer", "args": {"question": "Which card?"}}
+            )
+        return scripted_reply(request, tasks)
+
+    client = FakeClient(resolver_asks)
+    rec = _run("B", task, client, retriever, tmp_path, saver)
+    assert rec.scores["success"]
+    assert rec.meta["asked_customer"]
+    compliance = [r for r in client.calls if r.instructions.startswith("You are the compliance")]
+    assert task.hidden_facts[0] in json.dumps(compliance[0].input, ensure_ascii=False)
+    blob = json.dumps([r.input for r in client.calls], ensure_ascii=False)
+    assert "the customer was already asked" in blob
+
+
+def test_excerpts_carry_their_effective_date(retriever, tmp_path, saver):
+    client = scripted_client()
+    _run("B", task_by_id("task-001"), client, retriever, tmp_path, saver)
+    resolver = next(r for r in client.calls if r.instructions.startswith("You are the resolver"))
+    assert "(effective 20" in resolver.input[0]["content"]
