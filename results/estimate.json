@@ -1,0 +1,46 @@
+[
+  {
+    "stage": "A: single agent (k=4)",
+    "model": "gpt-6-luna",
+    "calls": 632,
+    "input_tokens": 953838,
+    "output_tokens": 44240,
+    "expected_usd": 0.1175,
+    "heavier_usd": 0.235,
+    "worst_usd": 0.6659,
+    "minutes_at_quota": 103.7
+  },
+  {
+    "stage": "B: full graph (k=4)",
+    "model": "gpt-6-luna",
+    "calls": 1000,
+    "input_tokens": 1131984,
+    "output_tokens": 106000,
+    "expected_usd": 0.1662,
+    "heavier_usd": 0.3324,
+    "worst_usd": 0.7428,
+    "minutes_at_quota": 117.1
+  },
+  {
+    "stage": "C: graph without compliance reviewer (k=2)",
+    "model": "gpt-6-luna",
+    "calls": 400,
+    "input_tokens": 403042,
+    "output_tokens": 45000,
+    "expected_usd": 0.0628,
+    "heavier_usd": 0.1256,
+    "worst_usd": 0.2812,
+    "minutes_at_quota": 43.8
+  },
+  {
+    "stage": "Gold cross-check (second model)",
+    "model": "gpt-5-mini",
+    "calls": 50,
+    "input_tokens": 106141,
+    "output_tokens": 45000,
+    "expected_usd": 0.1165,
+    "heavier_usd": 0.2331,
+    "worst_usd": 0.3061,
+    "minutes_at_quota": 13.8
+  }
+]

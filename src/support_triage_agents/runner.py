@@ -120,7 +120,6 @@ def run_ticket(
         start_state = initial_agent_state(task)
     model_error = None
     state: dict[str, Any] = {}
-    wall = time.perf_counter()
     try:
         state = app.invoke(start_state, config, durability="sync")
         while "__interrupt__" in state:
@@ -131,9 +130,8 @@ def run_ticket(
     except item_errors as exc:
         model_error = f"{type(exc).__name__}: {exc}"
         state = dict(app.get_state(config).values)
-    wall_ms = (time.perf_counter() - wall) * 1000.0
     try:
-        return _record(arm, task, trial, model, rt, state, oracle, model_error, wall_ms, workdir)
+        return _record(arm, task, trial, model, rt, state, oracle, model_error, workdir)
     finally:
         rt.close()
         bank_path.unlink(missing_ok=True)
@@ -148,7 +146,6 @@ def _record(
     state: dict[str, Any],
     oracle: GoldOracle,
     model_error: str | None,
-    wall_ms: float,
     workdir: Path,
 ) -> EvalRecord:
     diff = diff_states(seed_state(workdir), rt.bank.export_state())
@@ -192,7 +189,6 @@ def _record(
         "replayed_calls": int(usage.get("replayed_calls", 0)),
         "cached_tokens_in": int(usage.get("cached_tokens_in", 0)),
         "bounces": int(state.get("bounces", 0) or 0),
-        "wall_ms": round(wall_ms, 1),
     }
     return EvalRecord(
         run_id=f"{arm.name}/trial-{trial}",
