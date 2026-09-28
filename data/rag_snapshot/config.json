@@ -1,0 +1,33 @@
+{
+  "chunking": "fixed-title",
+  "fixed_chunk_tokens": 128,
+  "fixed_overlap_tokens": 16,
+  "title_in_embedding_text": true,
+  "n_chunks": 367,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "embedding_dim": 384,
+  "normalized": true,
+  "query_prompt": "Represent this sentence for searching relevant passages: ",
+  "similarity": "cosine (dot product of normalized vectors)",
+  "bm25": {
+    "k1": 1.2,
+    "b": 0.75,
+    "idf": "ln(1 + (N - df + 0.5) / (df + 0.5)), N and df over the chunks",
+    "token_regex": "[a-z0-9]+(?:[.,:][0-9]+)*",
+    "lowercase": true,
+    "stopwords": "NLTK English list, 179 words",
+    "stemmer": "Porter (nltk.stem.PorterStemmer)"
+  },
+  "dev_chosen_config": {
+    "chunking": "fixed-title",
+    "embedding": "bge-small",
+    "mode": "hybrid",
+    "fusion": "convex",
+    "alpha": 0.7,
+    "reranker": null,
+    "contextual": false
+  },
+  "dataset_commit": "3c72058e8cc7d5dd6e224ecdec7b814341a3d48f",
+  "dataset_license": "CC-BY-4.0"
+}
