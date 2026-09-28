@@ -279,3 +279,13 @@ def build_retriever(encoder: QueryEncoder, snapshot_dir: Path = SNAPSHOT_DIR) ->
     config = load_config(snapshot_dir)
     embeddings = np.load(snapshot_dir / "embeddings.npy")
     return HybridRetriever(load_chunks(snapshot_dir), embeddings, config, encoder)
+
+
+QUERY_CACHE = SNAPSHOT_DIR.parents[1] / "cache" / "query_embeddings.jsonl"
+
+
+def cached_retriever(*, embed_new: bool, cache_path: Path = QUERY_CACHE) -> HybridRetriever:
+    """The retriever every command uses. With embed_new=False a query not in the cache fails."""
+    config = load_config()
+    inner = BgeSmallEncoder(config) if embed_new else None
+    return build_retriever(CachedQueryEncoder(cache_path, config, inner))

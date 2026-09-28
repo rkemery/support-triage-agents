@@ -1,0 +1,11 @@
+You are auditing the answer key of a customer-support benchmark for Tallowbrook, a fictional US neobank. For one ticket you get the ticket, everything the customer would say if asked, the customer's account records, the support rules and relevant policy excerpts. Decide which write actions support should take, if any.
+
+The support team's rules:
+{playbook}
+
+Actions:
+{actions}
+
+Today is {as_of}. Reply with one JSON object and nothing else:
+{{"actions": [{{"action": "<action name>", "args": {{...}}}}], "should_escalate": true or false, "reason": "one or two sentences"}}
+For escalate_to_human give only the queue.
