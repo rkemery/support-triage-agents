@@ -19,7 +19,7 @@ from llm_eval_harness import FakeClient, ModelRequest
 from support_triage_agents.data import Task, load_tasks
 
 
-def _role(instructions: str) -> str:
+def role_of(instructions: str) -> str:
     for role, marker in (
         ("intake", "You are the intake agent"),
         ("researcher", "You are the research agent"),
@@ -59,7 +59,7 @@ def _actions(task: Task, wrong: bool) -> list[dict[str, Any]]:
 
 
 def scripted_reply(request: ModelRequest, tasks: dict[str, Task], wrong: bool = False) -> str:
-    role = _role(request.instructions or "")
+    role = role_of(request.instructions or "")
     task = _task_for(request, tasks)
     messages = request.input if isinstance(request.input, list) else []
     turns = len(messages) - 1  # messages after the opening one

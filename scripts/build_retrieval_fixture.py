@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 from support_triage_agents.retrieval import BgeSmallEncoder, load_config
-from support_triage_agents.vendor import RAG_SNAPSHOT, REPO_ROOT, _git
+from support_triage_agents.vendor import RAG_SNAPSHOT, REPO_ROOT, git_output
 
 OUT = REPO_ROOT / "tests" / "fixtures" / "rag_equivalence"
 CONTEXTS = "results/contexts/fixed-title-hybrid-bge-small-convex0.7.jsonl"
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--rag", type=Path, required=True, help="rag-support-assistant checkout")
     args = parser.parse_args(argv)
-    head = _git(args.rag, "rev-parse", "HEAD")
+    head = git_output(args.rag, "rev-parse", "HEAD")
     if head != RAG_SNAPSHOT.pinned_commit:
         print(f"{args.rag} is at {head}, expected {RAG_SNAPSHOT.pinned_commit}", file=sys.stderr)
         return 1

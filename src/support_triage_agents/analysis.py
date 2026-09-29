@@ -25,7 +25,6 @@ from llm_eval_harness.stats import (
     Interval,
     McNemarResult,
     PassKResult,
-    bootstrap_means,
     mcnemar_exact,
     percentile_interval,
     wilson_interval_clustered,
@@ -88,7 +87,6 @@ def pass_hat_k(trials: Sequence[Sequence[EvalRecord]], k: int) -> PassKResult:
 @dataclass(frozen=True)
 class Spend:
     per_resolved: Interval | None
-    per_ticket: float
     tokens_per_ticket: float
     p50_s: float
     p95_s: float
@@ -113,7 +111,6 @@ def spend(records: Sequence[EvalRecord], seed: int = 0) -> Spend:
     latencies = np.array([r.latency_ms for r in records]) / 1000.0
     return Spend(
         per_resolved=per_resolved,
-        per_ticket=float(np.mean([r.cost_usd for r in records])),
         tokens_per_ticket=float(np.mean([r.tokens_in + r.tokens_out for r in records])),
         p50_s=float(np.percentile(latencies, 50)),
         p95_s=float(np.percentile(latencies, 95)),
@@ -214,9 +211,3 @@ def reference_rows(tasks: Sequence[Task]) -> list[ReferenceRow]:
             )
         )
     return rows
-
-
-def bootstrap_mean(values: Sequence[float], seed: int = 0) -> Interval:
-    x = np.asarray(values, dtype=float)
-    reps = bootstrap_means(x, n_boot=10_000, seed=seed)
-    return percentile_interval(reps, float(x.mean()), x.size, method="bootstrap")

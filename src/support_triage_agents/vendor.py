@@ -112,7 +112,7 @@ def verify_all() -> dict[str, list[str]]:
     return {source.name: verify(source) for source in SOURCES}
 
 
-def _git(checkout: Path, *args: str) -> str:
+def git_output(checkout: Path, *args: str) -> str:
     result = subprocess.run(
         ["git", "-C", str(checkout), *args], capture_output=True, text=True, check=True
     )
@@ -121,10 +121,10 @@ def _git(checkout: Path, *args: str) -> str:
 
 def copy_from(source: VendoredSource, checkout: Path) -> None:
     """Copy the pinned files from a source checkout and rewrite the manifest."""
-    head = _git(checkout, "rev-parse", "HEAD")
+    head = git_output(checkout, "rev-parse", "HEAD")
     if head != source.pinned_commit:
         raise VendorError(f"{checkout} is at {head}, expected {source.pinned_commit}")
-    dirty = _git(checkout, "status", "--porcelain", "--", *source.files)
+    dirty = git_output(checkout, "status", "--porcelain", "--", *source.files)
     if dirty:
         raise VendorError(f"{checkout} has uncommitted changes to vendored files:\n{dirty}")
     source.dest.mkdir(parents=True, exist_ok=True)

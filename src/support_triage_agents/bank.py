@@ -188,7 +188,7 @@ class WriteResult:
 class Bank:
     """One SQLite database of bank state plus the support tools, scoped to one customer.
 
-    `Bank.create(path, seed, facts)` writes a fresh database from the seed.
+    `Bank.create(path, seed)` writes a fresh database from the seed.
     `Bank(path, facts, customer_id, ticket_id)` opens an existing one, so a
     resumed process can pick up where a killed one stopped.
     """
@@ -785,7 +785,7 @@ def _optional(name: str) -> set[str]:
     return OPTIONAL_ARGS.get(name, set())
 
 
-def _to_columns(table: str, row: dict[str, Any]) -> dict[str, Any]:
+def _to_columns(row: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for key, value in row.items():
         money = next((col for col, field in MONEY_COLUMNS.items() if field == key), None)
@@ -801,7 +801,7 @@ def _to_columns(table: str, row: dict[str, Any]) -> dict[str, Any]:
 
 
 def _insert(conn: sqlite3.Connection, table: str, row: dict[str, Any]) -> None:
-    _insert_raw(conn, table, _to_columns(table, row))
+    _insert_raw(conn, table, _to_columns(row))
 
 
 def _insert_raw(conn: sqlite3.Connection, table: str, columns: dict[str, Any]) -> None:

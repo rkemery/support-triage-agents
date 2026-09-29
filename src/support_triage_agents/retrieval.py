@@ -42,7 +42,9 @@ import numpy as np
 from nltk.stem import PorterStemmer
 
 from support_triage_agents.data import SNAPSHOT_DIR
+from support_triage_agents.vendor import REPO_ROOT
 
+QUERY_CACHE = REPO_ROOT / "cache" / "query_embeddings.jsonl"
 FIRST_STAGE_DEPTH = 50
 TOKEN_PATTERN = r"[a-z0-9]+(?:[.,:][0-9]+)*"
 _TOKEN = re.compile(TOKEN_PATTERN)
@@ -279,9 +281,6 @@ def build_retriever(encoder: QueryEncoder, snapshot_dir: Path = SNAPSHOT_DIR) ->
     config = load_config(snapshot_dir)
     embeddings = np.load(snapshot_dir / "embeddings.npy")
     return HybridRetriever(load_chunks(snapshot_dir), embeddings, config, encoder)
-
-
-QUERY_CACHE = SNAPSHOT_DIR.parents[1] / "cache" / "query_embeddings.jsonl"
 
 
 def cached_retriever(*, embed_new: bool, cache_path: Path = QUERY_CACHE) -> HybridRetriever:

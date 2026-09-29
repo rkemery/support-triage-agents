@@ -24,7 +24,6 @@ from support_triage_agents.vendor import REPO_ROOT
 
 PENDING = "pending live run"
 README = REPO_ROOT / "README.md"
-LIVE_RUNS = RESULTS_DIR / "live_runs.jsonl"
 EQUIVALENCE_FIXTURE = REPO_ROOT / "tests" / "fixtures" / "rag_equivalence"
 
 
@@ -340,7 +339,9 @@ def _actual_spend(results_dir: Path) -> str:
     return f"${spent:.2f} over {calls:,} live calls in {len(runs)} {runs_word}, from `DollarCap`."
 
 
-def render(readme: Path = README, results_dir: Path = RESULTS_DIR, cap_usd: float | None = None):
+def render(
+    readme: Path = README, results_dir: Path = RESULTS_DIR, cap_usd: float | None = None
+) -> bool:
     changed_results = write_section(readme, "results", results_section(results_dir))
     changed_cost = write_section(readme, "cost", cost_section(results_dir, cap_usd))
     return changed_results or changed_cost

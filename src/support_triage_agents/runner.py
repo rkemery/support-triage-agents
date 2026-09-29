@@ -35,7 +35,6 @@ from support_triage_agents.tools import CustomerSimulator
 from support_triage_agents.vendor import REPO_ROOT
 
 RESULTS_DIR = REPO_ROOT / "results"
-RUNS_DIR = RESULTS_DIR / "runs"
 WORK_DIR = REPO_ROOT / "runs"
 
 
