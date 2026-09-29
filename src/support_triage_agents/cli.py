@@ -51,8 +51,10 @@ def cmd_verify_data(_: argparse.Namespace) -> int:
 def cmd_demo(args: argparse.Namespace) -> int:
     cmd_verify_data(args)
     changed = readme.render(cap_usd=args.cap)
-    print(f"demo: README results and cost sections {'rewritten' if changed else 'unchanged'}")
+    print(f"demo: README sections {'rewritten' if changed else 'unchanged'}")
     print(readme.results_section())
+    print()
+    print(readme.results_detail_section())
     return 0
 
 
@@ -213,7 +215,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("verify-data", help="check vendored data hashes").set_defaults(
         fn=cmd_verify_data
     )
-    demo = sub.add_parser("demo", help="offline: rewrite the README results and cost sections")
+    demo = sub.add_parser("demo", help="offline: rewrite the generated README sections")
     demo.add_argument("--cap", type=float, default=DEFAULT_CAP_USD)
     demo.set_defaults(fn=cmd_demo)
     sub.add_parser("estimate", help="price the live run").set_defaults(fn=cmd_estimate)

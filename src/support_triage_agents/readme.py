@@ -1,4 +1,6 @@
-"""Render the README's results and cost sections from committed files. No model calls.
+"""Render the README's results, results detail and cost sections from committed files.
+
+No model calls.
 
 Rows whose results don't exist yet print "pending live run" instead of a number.
 """
@@ -15,9 +17,11 @@ from llm_eval_harness.report import write_section
 from llm_eval_harness.stats import Interval
 
 from support_triage_agents import analysis
+from support_triage_agents.clients import AGENT_MODEL, CROSSCHECK_MODEL, DEPLOYMENT_TPM
 from support_triage_agents.crosscheck import CROSSCHECK_PATH
 from support_triage_agents.data import Task, load_tasks
 from support_triage_agents.estimate import load_estimate
+from support_triage_agents.llm import STEP_BUDGET
 from support_triage_agents.runner import ARMS, RESULTS_DIR, Arm
 from support_triage_agents.scoring import FAILURE_CATEGORIES, sandbox_apply
 from support_triage_agents.vendor import REPO_ROOT
@@ -50,42 +54,74 @@ def _usd(interval: Interval | None) -> str:
     return f"${interval.estimate:.4f} (${interval.low:.4f} to ${interval.high:.4f})"
 
 
-def _arm_row(arm: Arm, trials: Sequence[Sequence[EvalRecord]]) -> str:
+# Columns of the full arms table, and the subset the headline table shows.
+FULL_COLUMNS = (
+    "success",
+    "pass_k_with_2",
+    "state_match",
+    "policy_violation",
+    "precision",
+    "recall",
+    "usd",
+    "tokens",
+    "latency",
+)
+HEADLINE_COLUMNS = ("success", "pass_k", "policy_violation", "usd")
+
+
+def _arm_cells(arm: Arm, trials: Sequence[Sequence[EvalRecord]]) -> dict[str, str] | None:
+    """Every table cell for one arm, or None while its trials are pending."""
     if len(trials) < arm.k:
-        return f"| {arm.label} | " + " | ".join([PENDING] * 9) + " | |"
+        return None
     records = analysis.flatten(trials)
     pk = analysis.pass_hat_k(trials, arm.k)
     s = analysis.spend(records)
-    cells = [
-        _pct(analysis.pooled_rate(records, "success")),
-        f"{_pct(pk.pass_hat_k)}, k={arm.k}"
-        + (f", pass^2 {_pct(analysis.pass_hat_k(trials, 2).pass_hat_k)}" if arm.k > 2 else ""),
-        _pct(analysis.pooled_rate(records, "state_match")),
-        _pct(analysis.pooled_rate(records, "policy_violation")),
-        _pct(analysis.escalation_precision(records)),
-        _pct(analysis.escalation_recall(records)),
-        _usd(s.per_resolved),
-        f"{s.tokens_per_ticket:,.0f}",
-        f"{s.p50_s:.1f} / {s.p95_s:.1f}",
-    ]
-    return f"| {arm.label} | " + " | ".join(cells) + f" | {len(records)} |"
+    pass_k = f"{_pct(pk.pass_hat_k)}, k={arm.k}"
+    pass_2 = f", pass^2 {_pct(analysis.pass_hat_k(trials, 2).pass_hat_k)}" if arm.k > 2 else ""
+    return {
+        "success": _pct(analysis.pooled_rate(records, "success")),
+        "pass_k": pass_k,
+        "pass_k_with_2": pass_k + pass_2,
+        "state_match": _pct(analysis.pooled_rate(records, "state_match")),
+        "policy_violation": _pct(analysis.pooled_rate(records, "policy_violation")),
+        "precision": _pct(analysis.escalation_precision(records)),
+        "recall": _pct(analysis.escalation_recall(records)),
+        "usd": _usd(s.per_resolved),
+        "tokens": f"{s.tokens_per_ticket:,.0f}",
+        "latency": f"{s.p50_s:.1f} / {s.p95_s:.1f}",
+        "runs": str(len(records)),
+    }
 
 
-def _reference_table(tasks: Sequence[Task]) -> list[str]:
-    rows = []
+def _reference_cells(ref: analysis.ReferenceRow, n_tasks: int) -> dict[str, str]:
+    return {
+        "success": _pct(ref.success),
+        "pass_k": "n/a (deterministic)",
+        "pass_k_with_2": "n/a (deterministic)",
+        "state_match": _pct(ref.state_match),
+        "policy_violation": _pct(ref.policy_violation),
+        "precision": _pct(ref.precision),
+        "recall": _pct(ref.recall),
+        "usd": "n/a (no model)",
+        "tokens": "0",
+        "latency": "n/a",
+        "runs": str(n_tasks),
+    }
+
+
+def _row(label: str, cells: dict[str, str] | None, columns: Sequence[str]) -> str:
+    if cells is None:
+        return f"| {label} | " + " | ".join([PENDING] * len(columns)) + " | |"
+    return f"| {label} | " + " | ".join(cells[c] for c in columns) + f" | {cells['runs']} |"
+
+
+def _arm_rows(
+    tasks: Sequence[Task], trials: dict[str, list[list[EvalRecord]]], columns: Sequence[str]
+) -> list[str]:
+    """One row per arm, then the two reference rows."""
+    rows = [_row(ARMS[k].label, _arm_cells(ARMS[k], trials[k]), columns) for k in "ABC"]
     for ref in analysis.reference_rows(tasks):
-        cells = [
-            _pct(ref.success),
-            "n/a (deterministic)",
-            _pct(ref.state_match),
-            _pct(ref.policy_violation),
-            _pct(ref.precision),
-            _pct(ref.recall),
-            "n/a (no model)",
-            "0",
-            "n/a",
-        ]
-        rows.append(f"| {ref.name} | " + " | ".join(cells) + f" | {len(tasks)} |")
+        rows.append(_row(ref.name, _reference_cells(ref, len(tasks)), columns))
     return rows
 
 
@@ -196,14 +232,14 @@ def retrieval_agreement() -> tuple[int, int, int]:
 
 def _crosscheck_line(n_tasks: int) -> str:
     if not CROSSCHECK_PATH.exists():
-        return f"- Second-model cross-check of the gold labels (gpt-5-mini): {PENDING}."
+        return f"- Second-model cross-check of the gold labels ({CROSSCHECK_MODEL}): {PENDING}."
     records = read_records(CROSSCHECK_PATH)
     scored = [r for r in records if "agrees" in r.scores]
     agree = [r.item_id for r in scored if r.scores["agrees"]]
     disagree = sorted(r.item_id for r in scored if not r.scores["agrees"])
     unparsed = len(records) - len(scored)
     line = (
-        f"- Second-model cross-check of the gold labels (gpt-5-mini): {len(agree)} of "
+        f"- Second-model cross-check of the gold labels ({CROSSCHECK_MODEL}): {len(agree)} of "
         f"{n_tasks} agree"
     )
     if disagree:
@@ -213,13 +249,17 @@ def _crosscheck_line(n_tasks: int) -> str:
     return line + "."
 
 
-def results_section(results_dir: Path = RESULTS_DIR) -> str:
+def _load_trials(results_dir: Path) -> tuple[list[Task], dict[str, list[list[EvalRecord]]]]:
     tasks = load_tasks()
     trials = {key: analysis.load_trials(arm, len(tasks), results_dir) for key, arm in ARMS.items()}
-    any_live = any(trials.values())
-    exact, same, n_q = retrieval_agreement()
+    return tasks, trials
+
+
+def results_section(results_dir: Path = RESULTS_DIR) -> str:
+    """The visible results: the headline table and the pre-registered verdict."""
+    tasks, trials = _load_trials(results_dir)
     lines = []
-    if not any_live:
+    if not any(trials.values()):
         lines += [
             '> Rows marked "pending live run" need Azure model calls, which have not been made '
             "yet. Every number shown was produced offline by `make demo`, with no keys and no "
@@ -227,29 +267,48 @@ def results_section(results_dir: Path = RESULTS_DIR) -> str:
             "",
         ]
     lines += [
-        f"**Arms on the {len(tasks)} tasks.** gpt-6-luna, reasoning effort none, the same tools, "
-        "help-center snapshot and step budget (16 model calls) in every arm. Rates pool every "
-        "trial and carry a 95% clustered Wilson interval with tasks as clusters. pass^k is the "
-        "chance all k trials of a task succeed, averaged over tasks, with a bootstrap interval "
-        "over tasks. Model seconds are the sum of a ticket's model-call latencies.",
+        f"Every arm uses {AGENT_MODEL} with the same tools, docs and step budget, on "
+        f"{len(tasks)} tasks. Intervals are 95% and clustered by task.",
+        "",
+        "| Arm | Success | pass^k | Policy violations | $ per resolved ticket | Ticket runs |",
+        "|---|---|---|---|---|---|",
+    ]
+    lines += _arm_rows(tasks, trials, HEADLINE_COLUMNS)
+    lines += [
+        "",
+        "**Pre-registered hypothesis: the graph wins on policy violations, not on raw "
+        "resolution.** " + _verdict(trials),
+    ]
+    return "\n".join(lines)
+
+
+def results_detail_section(results_dir: Path = RESULTS_DIR) -> str:
+    """Every metric, the paired comparisons, the failure categories and the offline checks."""
+    tasks, trials = _load_trials(results_dir)
+    exact, same, n_q = retrieval_agreement()
+    do_nothing_right = sum(not t.gold_actions for t in tasks)
+    lines = [
+        f"**Arms on the {len(tasks)} tasks.** {AGENT_MODEL}, reasoning effort none, the same "
+        f"tools, help-center snapshot and step budget ({STEP_BUDGET} model calls) in every arm. "
+        "Rates pool every trial and carry a 95% clustered Wilson interval with tasks as "
+        "clusters. pass^k is the chance all k trials of a task succeed, averaged over tasks, "
+        "with a bootstrap interval over tasks. Model seconds are the sum of a ticket's "
+        "model-call latencies.",
         "",
         "| Arm | Success (pass^1) | pass^k | State match | Policy violations | Escalation "
         "precision | Escalation recall | $ per resolved ticket | Tokens per ticket | p50 / p95 "
         "model s | Ticket runs |",
         "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
-    lines += [_arm_row(ARMS[k], trials[k]) for k in "ABC"]
-    lines += _reference_table(tasks)
+    lines += _arm_rows(tasks, trials, FULL_COLUMNS)
     lines += [
         "",
         "Success needs the gold end state, no policy violation, no plan rejected at review and a "
         "finished ticket. State match alone counts a ticket where a bank rule or the reviewer "
         "stopped a wrong action and the state stayed right. The two reference rows are policies "
-        "computed by code through the same scorer: doing nothing is right on the 13 tasks whose "
-        "gold resolution is to explain or decline, and replaying the gold actions is the ceiling.",
-        "",
-        "**Pre-registered hypothesis: the graph wins on policy violations, not on raw "
-        "resolution.** " + _verdict(trials),
+        "computed by code through the same scorer: doing nothing is right on the "
+        f"{do_nothing_right} tasks whose gold resolution is to explain or decline, and replaying "
+        "the gold actions is the ceiling.",
         "",
         "**Paired comparisons**, trial t of one arm against trial t of the other on the same "
         "task, clustered by task (harness clustered paired t-test, with the minimum detectable "
@@ -312,7 +371,8 @@ def cost_section(results_dir: Path = RESULTS_DIR, cap_usd: float | None = None) 
     )
     lines += [
         "",
-        f"At the day-1 capacities (20K tokens per minute on gpt-6-luna and gpt-5-mini) the run "
+        f"At the day-1 capacities ({DEPLOYMENT_TPM[AGENT_MODEL] // 1000}K tokens per minute on "
+        f"{AGENT_MODEL} and {CROSSCHECK_MODEL}) the run "
         f"needs about {minutes / 60:.1f} hours of wall time. Raise the capacities and set "
         "`TRIAGE_TPM` to match to go faster.",
     ]
@@ -342,6 +402,10 @@ def _actual_spend(results_dir: Path) -> str:
 def render(
     readme: Path = README, results_dir: Path = RESULTS_DIR, cap_usd: float | None = None
 ) -> bool:
-    changed_results = write_section(readme, "results", results_section(results_dir))
-    changed_cost = write_section(readme, "cost", cost_section(results_dir, cap_usd))
-    return changed_results or changed_cost
+    sections = {
+        "results": results_section(results_dir),
+        "results-detail": results_detail_section(results_dir),
+        "cost": cost_section(results_dir, cap_usd),
+    }
+    changed = [write_section(readme, name, body) for name, body in sections.items()]
+    return any(changed)

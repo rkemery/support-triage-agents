@@ -8,6 +8,23 @@ It is measured against a single agent with the same model, tools, docs and step 
 ## Results
 
 <!-- results:start -->
+Every arm uses gpt-6-luna with the same tools, docs and step budget, on 50 tasks. Intervals are 95% and clustered by task.
+
+| Arm | Success | pass^k | Policy violations | $ per resolved ticket | Ticket runs |
+|---|---|---|---|---|---|
+| A: single agent | 64.5% (52.9 to 74.6) | 44.0% (30.0 to 58.0), k=4 | 9.0% (4.1 to 18.7) | $0.0004 ($0.0004 to $0.0006) | 200 |
+| B: full graph | 81.5% (70.8 to 88.9) | 68.0% (56.0 to 80.0), k=4 | 0.0% (0.0 to 2.0) | $0.0017 ($0.0014 to $0.0021) | 200 |
+| C: graph without compliance reviewer | 82.0% (70.4 to 89.7) | 76.0% (64.0 to 88.0), k=2 | 3.0% (0.8 to 11.2) | $0.0007 ($0.0006 to $0.0008) | 100 |
+| Do nothing (reference) | 26.0% (15.7 to 39.9) | n/a (deterministic) | 0.0% (0.0 to 7.5) | n/a (no model) | 50 |
+| Gold actions (reference) | 100.0% (92.5 to 100.0) | n/a (deterministic) | 0.0% (0.0 to 7.5) | n/a (no model) | 50 |
+
+**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: half right. The graph did cut policy violations, but it also resolved more tickets, so the "not on raw resolution" half was wrong. Policy violations, B minus A: -9.0 pts (p = 0.015). Success, B minus A: +17.0 pts (p = 0.009).
+<!-- results:end -->
+
+<details>
+<summary>All metrics, paired tests, failure categories and offline checks</summary>
+
+<!-- results-detail:start -->
 **Arms on the 50 tasks.** gpt-6-luna, reasoning effort none, the same tools, help-center snapshot and step budget (16 model calls) in every arm. Rates pool every trial and carry a 95% clustered Wilson interval with tasks as clusters. pass^k is the chance all k trials of a task succeed, averaged over tasks, with a bootstrap interval over tasks. Model seconds are the sum of a ticket's model-call latencies.
 
 | Arm | Success (pass^1) | pass^k | State match | Policy violations | Escalation precision | Escalation recall | $ per resolved ticket | Tokens per ticket | p50 / p95 model s | Ticket runs |
@@ -19,8 +36,6 @@ It is measured against a single agent with the same model, tools, docs and step 
 | Gold actions (reference) | 100.0% (92.5 to 100.0) | n/a (deterministic) | 100.0% (92.5 to 100.0) | 0.0% (0.0 to 7.5) | 100.0% (66.1 to 100.0) | 100.0% (66.1 to 100.0) | n/a (no model) | 0 | n/a | 50 |
 
 Success needs the gold end state, no policy violation, no plan rejected at review and a finished ticket. State match alone counts a ticket where a bank rule or the reviewer stopped a wrong action and the state stayed right. The two reference rows are policies computed by code through the same scorer: doing nothing is right on the 13 tasks whose gold resolution is to explain or decline, and replaying the gold actions is the ceiling.
-
-**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: half right. The graph did cut policy violations, but it also resolved more tickets, so the "not on raw resolution" half was wrong. Policy violations, B minus A: -9.0 pts (p = 0.015). Success, B minus A: +17.0 pts (p = 0.009).
 
 **Paired comparisons**, trial t of one arm against trial t of the other on the same task, clustered by task (harness clustered paired t-test, with the minimum detectable effect at 80% power). The McNemar column uses the first trial only, one independent pair per task. C minus A is not pre-registered and pairs on C's two trials.
 
@@ -49,7 +64,9 @@ Success needs the gold end state, no policy violation, no plan rejected at revie
 - The SQLite bank reproduces the dataset's gold final state from the gold actions for 50 of 50 tasks. The dataset computed those states with its own reference model, so two implementations agree.
 - The Researcher's hybrid search matches the RAG repo's frozen top 8 chunks in the same order for 199 of 200 questions, and as a set for 200 of 200.
 - Second-model cross-check of the gold labels (gpt-5-mini): 38 of 50 agree. Disagreements, listed and not adjudicated: task-007, task-008, task-009, task-010, task-013, task-020, task-021, task-024, task-027, task-037, task-039, task-044.
-<!-- results:end -->
+<!-- results-detail:end -->
+
+</details>
 
 ## Quickstart
 
