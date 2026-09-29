@@ -1,0 +1,492 @@
+# Tallowbrook policy facts: the single source of truth for this dataset.
+#
+# Tallowbrook is a FICTIONAL neobank. None of these policies describe a real
+# bank, credit union or fintech. Everything in corpus/, rag/, agents/ and
+# attacks/ is generated from or checked against this file.
+#
+# Key suffixes carry the unit, and scripts/validate.py relies on them:
+#   *_usd            money in US dollars
+#   *_pct            percent
+#   *_days           calendar days
+#   *_business_days  business days (Monday to Friday, excluding bank holidays)
+#   *_hours          hours
+#   *_time_et        clock time, US Eastern Time
+# Versioned policies keep every version. The newest one is current and the
+# older one is superseded on the stated date.
+
+meta:
+  bank_name: Tallowbrook
+  legal_name: Tallowbrook Bank (fictional)
+  fictional: true
+  as_of_date: 2026-09-01
+  currency: USD
+  country: US
+  help_center_domain: help.tallowbrook.example
+  support_email: support@tallowbrook.example
+  support_phone: "+1 555 0142"          # 555-01xx is reserved for fiction
+  card_network_note: "Card numbers in this dataset are fake test numbers."
+  atm_network_name: BrookLink
+  member_transfer_name: BrookPay
+  overdraft_feature_name: Cushion
+  savings_feature_name: Savings Pockets
+
+plans:
+  order: [basic, plus, premium]
+  basic:
+    display_name: Basic
+    card_material: plastic
+  plus:
+    display_name: Plus
+    card_material: plastic
+  premium:
+    display_name: Premium
+    card_material: metal
+
+# ---------------------------------------------------------------- fees
+fees:
+  current_version: 2
+  versions:
+    v2:
+      effective_date: 2026-03-01
+      supersedes: v1
+      changes_from_previous:
+        - "Plus monthly fee went from $4.00 to $5.00."
+        - "Plus foreign transaction fee went from 1.5% to 1%."
+        - "Out-of-network ATM fee for Basic and Plus went from $2.00 to $2.50."
+        - "Plus free out-of-network ATM withdrawals went from 2 to 3 per month."
+      basic:
+        monthly_fee_usd: 0.00
+        out_of_network_atm_fee_usd: 2.50
+        free_out_of_network_withdrawals_per_month: 0
+        atm_surcharge_reimbursement_monthly_cap_usd: 0.00
+        international_atm_fee_usd: 3.00
+        fx_fee_pct: 3
+        card_replacement_fee_usd: 5.00
+        expedited_shipping_fee_usd: 25.00
+        domestic_wire_out_fee_usd: 25.00
+        international_wire_out_fee_usd: null      # not available on Basic
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 10.00
+        retail_cash_deposit_fee_usd: 3.00
+      plus:
+        monthly_fee_usd: 5.00
+        out_of_network_atm_fee_usd: 2.50
+        free_out_of_network_withdrawals_per_month: 3
+        atm_surcharge_reimbursement_monthly_cap_usd: 0.00
+        international_atm_fee_usd: 3.00
+        fx_fee_pct: 1
+        card_replacement_fee_usd: 0.00
+        expedited_shipping_fee_usd: 25.00
+        domestic_wire_out_fee_usd: 15.00
+        international_wire_out_fee_usd: 35.00
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 10.00
+        retail_cash_deposit_fee_usd: 3.00
+      premium:
+        monthly_fee_usd: 15.00
+        out_of_network_atm_fee_usd: 0.00
+        free_out_of_network_withdrawals_per_month: unlimited
+        atm_surcharge_reimbursement_monthly_cap_usd: 10.00
+        international_atm_fee_usd: 0.00
+        fx_fee_pct: 0
+        card_replacement_fee_usd: 0.00
+        expedited_shipping_fee_usd: 0.00
+        domestic_wire_out_fee_usd: 0.00
+        international_wire_out_fee_usd: 10.00
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 0.00
+        retail_cash_deposit_fee_usd: 0.00
+    v1:
+      effective_date: 2025-01-01
+      superseded_on: 2026-03-01
+      basic:
+        monthly_fee_usd: 0.00
+        out_of_network_atm_fee_usd: 2.00
+        free_out_of_network_withdrawals_per_month: 0
+        atm_surcharge_reimbursement_monthly_cap_usd: 0.00
+        international_atm_fee_usd: 3.00
+        fx_fee_pct: 3
+        card_replacement_fee_usd: 5.00
+        expedited_shipping_fee_usd: 25.00
+        domestic_wire_out_fee_usd: 25.00
+        international_wire_out_fee_usd: null
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 10.00
+        retail_cash_deposit_fee_usd: 3.00
+      plus:
+        monthly_fee_usd: 4.00
+        out_of_network_atm_fee_usd: 2.00
+        free_out_of_network_withdrawals_per_month: 2
+        atm_surcharge_reimbursement_monthly_cap_usd: 0.00
+        international_atm_fee_usd: 3.00
+        fx_fee_pct: 1.5
+        card_replacement_fee_usd: 0.00
+        expedited_shipping_fee_usd: 25.00
+        domestic_wire_out_fee_usd: 15.00
+        international_wire_out_fee_usd: 35.00
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 10.00
+        retail_cash_deposit_fee_usd: 3.00
+      premium:
+        monthly_fee_usd: 15.00
+        out_of_network_atm_fee_usd: 0.00
+        free_out_of_network_withdrawals_per_month: unlimited
+        atm_surcharge_reimbursement_monthly_cap_usd: 10.00
+        international_atm_fee_usd: 0.00
+        fx_fee_pct: 0
+        card_replacement_fee_usd: 0.00
+        expedited_shipping_fee_usd: 0.00
+        domestic_wire_out_fee_usd: 0.00
+        international_wire_out_fee_usd: 10.00
+        incoming_domestic_wire_fee_usd: 0.00
+        incoming_international_wire_fee_usd: 0.00
+        retail_cash_deposit_fee_usd: 0.00
+  all_plans:
+    overdraft_fee_usd: 0.00
+    nsf_fee_usd: 0.00
+    returned_transfer_fee_usd: 0.00
+    paper_statement_fee_usd: 0.00
+    inactivity_fee_usd: 0.00
+
+# ---------------------------------------------------------------- plan billing
+plan_billing:
+  upgrade: "Takes effect immediately. The new plan's full monthly fee is charged that day, and that day becomes the new billing date."
+  downgrade: "Takes effect on the next billing date. No partial refund for the current month."
+  proration: false
+  cooling_off_days: 14          # full refund of the FIRST paid plan charge if you leave the paid plan within this window
+  cooling_off_scope: "Only the first paid-plan charge on the account, ever. The plan returns to Basic right away."
+  failed_payment_retry_days: 3  # a failed plan fee is retried after this many days
+  failed_payment_rule: "If the plan fee can't be collected on the billing date or on the retry, the plan moves to Basic."
+
+# ---------------------------------------------------------------- limits (not versioned)
+limits:
+  basic:
+    daily_card_spend_limit_usd: 3000
+    daily_atm_withdrawal_limit_usd: 500
+    daily_ach_out_limit_usd: 2500
+    monthly_ach_out_limit_usd: 10000
+    daily_brookpay_limit_usd: 1000
+    daily_domestic_wire_limit_usd: 5000
+    daily_mobile_check_deposit_limit_usd: 1000
+    daily_retail_cash_deposit_limit_usd: 1000
+  plus:
+    daily_card_spend_limit_usd: 5000
+    daily_atm_withdrawal_limit_usd: 1000
+    daily_ach_out_limit_usd: 5000
+    monthly_ach_out_limit_usd: 20000
+    daily_brookpay_limit_usd: 2500
+    daily_domestic_wire_limit_usd: 10000
+    daily_mobile_check_deposit_limit_usd: 2500
+    daily_retail_cash_deposit_limit_usd: 1000
+  premium:
+    daily_card_spend_limit_usd: 10000
+    daily_atm_withdrawal_limit_usd: 1500
+    daily_ach_out_limit_usd: 10000
+    monthly_ach_out_limit_usd: 50000
+    daily_brookpay_limit_usd: 5000
+    daily_domestic_wire_limit_usd: 25000
+    daily_mobile_check_deposit_limit_usd: 5000
+    daily_retail_cash_deposit_limit_usd: 2000
+  limit_changes: "Limits are set by plan. Support can't raise them and there is no exception process. Changing plan is the only way to get higher limits."
+  new_device_transfer_cap_usd: 500      # BrookPay and external transfers for 24 hours after a new-device sign-in
+  new_device_hold_hours: 24
+
+# ---------------------------------------------------------------- cards
+cards:
+  standard_delivery_min_business_days: 7
+  standard_delivery_max_business_days: 10
+  expedited_delivery_min_business_days: 2
+  expedited_delivery_max_business_days: 3
+  renewal_mailed_before_expiry_days: 30
+  activation: "Activate in the app by scanning the card or entering the last 4 digits and the expiry date. A new card can't be used for purchases until activated."
+  pin: "Set or change the PIN in the app under Card settings. Support never asks for or sees your PIN."
+  freeze: "Freeze and unfreeze any time in the app. Freezing is instant and reversible. Recurring payments from merchants you've already authorized, refunds and deposits still go through."
+  damaged_card: "A damaged card keeps working until you activate the replacement. Replacement fee and shipping options are the same as for a lost card."
+  virtual_card: "Every verified member can create one virtual card in the app, usable right away online and in mobile wallets."
+  metal_card: "Premium members get a metal card. Replacements are metal too."
+  premium_emergency_card_abroad_business_days: 3   # Premium only, free
+  emergency_card_abroad_fee_usd: 0.00
+  emergency_card_abroad_plans: [premium]
+  controls: "In the app you can switch online purchases, international purchases, ATM withdrawals and contactless on or off."
+  fraud_lock: "Tallowbrook's fraud systems can place a fraud lock on a card. A fraud lock is not the same as a freeze. The member can't remove it in the app and support can't remove it. Only the Fraud team can."
+
+lost_stolen:
+  current_version: 2
+  versions:
+    v2:
+      effective_date: 2025-11-01
+      supersedes: v1
+      steps:
+        - "Freeze the card in the app right away."
+        - "If you can't find it, report it lost or stolen in the app. This cancels the card permanently."
+        - "Add a virtual card in the app so you can keep spending while the replacement ships."
+        - "Order a physical replacement (standard or expedited shipping)."
+        - "Review recent transactions and dispute any you don't recognize."
+      reporting_channel: in_app
+      virtual_card_available: true
+    v1:
+      effective_date: 2024-01-01
+      superseded_on: 2025-11-01
+      steps:
+        - "Call the card services line at +1 555 0142, available 24 hours a day."
+        - "The agent cancels the card and orders a replacement."
+        - "Review recent transactions and dispute any you don't recognize."
+      reporting_channel: phone
+      virtual_card_available: false
+      phone_line_hours: 24
+  zero_liability_rule: "You aren't responsible for unauthorized card transactions if you report them within the dispute window for unauthorized transactions."
+
+# ---------------------------------------------------------------- ATMs and cash
+atm:
+  network: BrookLink
+  in_network_fee_usd: 0.00
+  operator_surcharge_note: "Out-of-network ATM owners may add their own surcharge. That surcharge is separate from Tallowbrook's fee. Premium reimburses surcharges up to the monthly cap."
+  cash_not_dispensed_dispute_window_days: 60
+  cash_not_dispensed_resolution_business_days: 10
+  retail_cash_deposit_note: "Cash can be added at participating retail stores by showing a barcode from the app. Funds appear within minutes."
+
+# ---------------------------------------------------------------- travel and FX
+travel:
+  current_version: 2
+  versions:
+    v2:
+      effective_date: 2025-09-01
+      supersedes: v1
+      travel_notice_required: false
+      rule: "Travel notices are no longer needed and the Travel mode setting was retired. Keep the app's notifications on so you can confirm fraud alerts quickly."
+    v1:
+      effective_date: 2024-03-01
+      superseded_on: 2025-09-01
+      travel_notice_required: true
+      notice_min_days_before_departure: 2
+      notice_max_trip_days: 90
+      rule: "Set a travel notice in the app under Travel mode at least 2 days before you leave. A notice can cover a trip of up to 90 days."
+  fx_rate_source: "The card network's exchange rate on the day the transaction settles, plus your plan's foreign transaction fee."
+  dcc_advice: "When a terminal or ATM abroad offers to charge you in US dollars, choose the local currency instead. The merchant's conversion rate is usually worse."
+  blocked_regions: "Cards don't work in comprehensively sanctioned countries and regions."
+
+# ---------------------------------------------------------------- transfers
+transfers:
+  ach:
+    current_version: 2
+    versions:
+      v2:
+        effective_date: 2026-05-01
+        supersedes: v1
+        cutoff_time_et: "4:00 PM"
+      v1:
+        effective_date: 2024-01-01
+        superseded_on: 2026-05-01
+        cutoff_time_et: "2:00 PM"
+    arrival_min_business_days: 1
+    arrival_max_business_days: 3
+    cancel_rule: "A scheduled ACH transfer can be cancelled in the app until the cutoff time on its send date. After that it can't be cancelled."
+    external_account_microdeposit_min_business_days: 1
+    external_account_microdeposit_max_business_days: 2
+    microdeposit_confirm_within_days: 14
+    max_linked_accounts: 5
+  brookpay:
+    availability: "24/7, arrives in seconds, only between Tallowbrook members."
+    reversible: false
+    fee_usd: 0.00
+  wires:
+    domestic_cutoff_time_et: "3:00 PM"
+    international_cutoff_time_et: "1:00 PM"
+    domestic_arrival: "Same business day if sent before the cutoff."
+    international_arrival_min_business_days: 1
+    international_arrival_max_business_days: 5
+    international_wire_plans: [plus, premium]
+    recall_rule: "Wires can't be cancelled once sent. We can request a recall, but the receiving bank decides."
+  direct_deposit:
+    early_direct_deposit_max_days: 2
+    early_direct_deposit_plans: [basic, plus, premium]
+  mobile_check_deposit:
+    next_business_day_available_usd: 225
+    remainder_available_business_days: 2
+    new_account_hold_business_days: 7
+    new_account_period_days: 30
+    keep_check_days: 14
+    endorsement: "For mobile deposit only at Tallowbrook"
+  holidays: "ACH transfers, wires and check deposits don't process on weekends or bank holidays. BrookPay and card payments work every day."
+
+# ---------------------------------------------------------------- disputes
+disputes:
+  current_version: 2
+  versions:
+    v2:
+      effective_date: 2026-01-15
+      supersedes: v1
+      merchant_dispute_window_days: 120   # from the transaction date
+    v1:
+      effective_date: 2024-06-01
+      superseded_on: 2026-01-15
+      merchant_dispute_window_days: 90
+  unauthorized_window_days: 60            # from the date of the statement on which the transaction first appeared
+  statement_date_rule: "Statements close on the last calendar day of each month."
+  provisional_credit_business_days: 10
+  investigation_days: 45
+  extended_investigation_days: 90         # foreign transactions, or accounts open less than 30 days
+  new_account_days: 30
+  denial_reversal_notice_business_days: 5
+  pending_rule: "Pending transactions can't be disputed. Wait until the transaction posts. Most pending authorizations drop off or post within 7 days."
+  pending_dropoff_days: 7
+  merchant_first_rule: "For merchant disputes (not received, not as described, cancelled subscription still charged) contact the merchant first and keep a record."
+  unauthorized_requires_card_block: "Before an unauthorized card transaction is disputed, the card must be frozen or reported lost or stolen."
+  support_max_dispute_usd: 5000           # support may open disputes up to this total per case, above goes to the Disputes team
+  reasons: [unauthorized, merchant_not_received, merchant_not_as_described, duplicate, cancelled_recurring, atm_cash_not_dispensed]
+  ach_unauthorized_window_days: 60
+
+# ---------------------------------------------------------------- verification (KYC)
+verification:
+  min_age_years: 18
+  requirements:
+    - "Legal name, date of birth and a US residential address (no PO boxes)"
+    - "Social Security number or ITIN"
+    - "An unexpired government-issued photo ID"
+    - "A selfie taken in the app"
+  typical_business_days: 1
+  manual_review_max_business_days: 5
+  proof_of_address_max_age_days: 90
+  name_change: "Legal name and date-of-birth changes are handled by the Verification team, not by support. They take up to 5 business days after documents are received."
+  name_change_business_days: 5
+  max_attempts: 3
+  reapply_after_days: 30
+  under_review_restrictions: "While an account is under review you can receive deposits, but you can't send money, withdraw cash or order a card."
+  decisions: "Support can't approve, reverse or explain verification decisions. The Verification team handles them."
+
+# ---------------------------------------------------------------- overdraft / Cushion
+overdraft:
+  overdraft_fee_usd: 0.00
+  declined_if_insufficient: true
+  cushion:
+    basic_limit_usd: null        # Basic is not eligible
+    plus_limit_usd: 50
+    premium_limit_usd: 200
+    min_direct_deposit_usd: 500
+    direct_deposit_lookback_days: 30
+    covers: "Debit card purchases only. ATM withdrawals, transfers and wires are never covered."
+    fee_usd: 0.00
+    repay_within_days: 30
+    restriction_after_days: 60
+    repayment_rule: "Your next deposit repays a negative balance automatically. If the balance stays negative for 30 days, Cushion is suspended. After 60 days the account is restricted."
+
+# ---------------------------------------------------------------- savings
+savings:
+  current_version: 2
+  versions:
+    v2:
+      effective_date: 2026-06-01
+      supersedes: v1
+      basic_apy_pct: 0.50
+      plus_apy_pct: 2.00
+      premium_apy_pct: 3.75
+    v1:
+      effective_date: 2025-07-01
+      superseded_on: 2026-06-01
+      basic_apy_pct: 0.75
+      plus_apy_pct: 2.50
+      premium_apy_pct: 4.10
+  apy_balance_cap_usd: 100000
+  above_cap_apy_pct: 0.10
+  compounding: daily
+  paid: monthly
+  max_pockets: 10
+  withdrawal_limit: none
+  rate_change_notice_days: 30
+  round_ups: "Card purchases can be rounded up to the next dollar, with the difference moved to a Savings Pocket."
+  tax_form_threshold_usd: 10
+  tax_form: 1099-INT
+  tax_form_deadline: "January 31"
+
+# ---------------------------------------------------------------- closure
+closure:
+  requirements: "No pending transactions, no open disputes and no negative balance."
+  payout_business_days: 10
+  payout_methods: "Remaining balance goes to your linked external account by ACH, or by mailed check if no account is linked."
+  statements_after_closure_days: 90
+  plan_fee_refund_on_closure: false
+  inactivity_closure_rule: "Accounts with a $0.00 balance and no activity for 12 months may be closed by Tallowbrook with 30 days' notice."
+  inactivity_notice_days: 30
+  inactivity_balance_usd: 0.00
+  reopen: "Closed accounts can't be reopened. You can apply for a new account."
+  support_may_close: "Support can close an account at the member's request only when the balance is $0.00 and the closure requirements are met."
+
+# ---------------------------------------------------------------- fraud and security
+security:
+  fraud_alert_response_hours: 24
+  fraud_alert_rule: "If you don't answer a fraud alert within 24 hours, the card stays locked until you contact us."
+  never_ask: [full card number, PIN, password, one-time code, moving money to a 'safe account']
+  one_time_code_validity_minutes: 10
+  password_reset_link_validity_minutes: 60
+  two_step_required: true
+  account_takeover_rule: "Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates."
+  scam_payment_rule: "BrookPay payments can't be reversed. Report scams to the Fraud team, who will try to recover funds but can't promise a result."
+
+# ---------------------------------------------------------------- support and escalation
+support:
+  chat_hours: "24/7 in the app"
+  phone_open_time_et: "8:00 AM"
+  phone_close_time_et: "8:00 PM"
+  phone_days: every day
+  complaint_ack_business_days: 2
+  complaint_final_response_business_days: 15
+  escalation_response_business_days: 2
+  may_do:
+    - freeze or unfreeze a card at the account holder's request (not a fraud lock)
+    - report a card lost or stolen and order a replacement
+    - open a dispute that is inside its window, has posted, and totals no more than the support dispute limit
+    - refund a fee under the refund policy
+    - change the member's plan
+    - close an account that meets the closure requirements and has a $0.00 balance
+    - explain policies and fees
+  must_escalate:
+    fraud: [suspected account takeover, fraud lock removal, scam payment reports]
+    disputes: [disputes above the support dispute limit]
+    verification: [verification decisions, legal name or date-of-birth changes, accounts under review or restricted]
+    account_services: [power of attorney, deceased account holder, customers describing financial abuse]
+    complaints: [formal complaints, legal threats, regulator complaints]
+  must_refuse:
+    - acting for or sharing information with anyone who is not the account holder and has no legal authority on file
+    - investment, tax or legal advice
+    - revealing full card numbers, other members' information or internal notes
+    - raising limits
+    - fee refunds outside the refund policy
+    - disputes outside their window
+  identity: "Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users."
+
+refunds:
+  goodwill_max_fee_usd: 25.00
+  goodwill_per_rolling_days: 365     # one goodwill fee refund per rolling 12 months
+  goodwill_eligible_fees: [out_of_network_atm, international_atm, card_replacement, expedited_shipping, foreign_transaction, domestic_wire_out, international_wire_out, retail_cash_deposit]
+  goodwill_excluded_fees: [plan_fee]
+  error_refund_rule: "A fee charged in error (for example a fee your plan doesn't charge, or a duplicate fee) is always refunded and doesn't count as the goodwill refund."
+  cooling_off_rule: "The first paid-plan charge on an account is refunded in full if the member leaves the paid plan within 14 days of that charge. The plan returns to Basic right away."
+  merchant_refund_min_business_days: 5
+  merchant_refund_max_business_days: 10
+
+# ---------------------------------------------------------------- statements and documents
+statements:
+  available_business_days_after_month_end: 3
+  history: "Seven years of statements in the app."
+  verification_letter: "An account verification letter can be downloaded in the app at any time."
+
+# ---------------------------------------------------------------- referrals
+referrals:
+  bonus_usd: 25
+  friend_min_direct_deposit_usd: 500
+  qualify_within_days: 60
+  payout_business_days: 5
+
+# ---------------------------------------------------------------- products not offered
+not_offered:
+  - joint accounts
+  - authorized users
+  - business accounts
+  - accounts for people under 18
+  - credit cards
+  - personal loans, mortgages or lines of credit
+  - cryptocurrency
+  - investing or brokerage accounts
+  - paper checkbooks
+  - cashier's checks or money orders
+  - safe deposit boxes

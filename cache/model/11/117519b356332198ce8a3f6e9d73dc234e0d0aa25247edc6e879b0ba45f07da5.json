@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_010.\n\nTicket from customer cus_010:\nHey, I see a charge of $340 from Lumen Outfitters London on July 25. I haven't been to the UK in years. Please dispute it.\n\nIntake summary (dispute): The customer wants to dispute a $340 charge from Lumen Outfitters London dated July 25, saying they haven't been to the UK in years. This may be an unauthorized charge and should be routed for fraud review.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 218,
+    "latency_ms": 1105.6883340934291,
+    "model": "gpt-6-luna",
+    "output_tokens": 57,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"How to report and dispute an unauthorized debit card charge, including fraud review and required steps\",\"Dispute deadlines and eligibility for card transactions; required information and documentation\",\"How to secure an account and escalate suspected card fraud after an unrecognized international charge\"]}"
+  }
+}

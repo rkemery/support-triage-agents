@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_018.\n\nTicket from customer cus_018:\nI cancelled StreamNest back in July but they charged me again in August and now again this month. Can you get those back?\n\nIntake summary (dispute): The customer says StreamNest charged them in August and again this month despite cancelling in July, and wants the charges refunded. These appear to be recurring charges they may wish to dispute.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 203,
+    "latency_ms": 1146.9765829388052,
+    "model": "gpt-6-luna",
+    "output_tokens": 41,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"How to dispute recurring subscription charges after cancellation, including eligibility, time limits, and required evidence\",\"Recurring card payment chargeback process for cancelled subscriptions and merchant billing disputes\"]}"
+  }
+}

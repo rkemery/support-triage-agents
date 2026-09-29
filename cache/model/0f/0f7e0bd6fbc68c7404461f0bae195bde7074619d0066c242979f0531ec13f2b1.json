@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_009.\n\nTicket from customer cus_009:\nI just noticed a charge from June 12, $120 at Volta Electronics. I don't know what it is. Can you dispute it?\n\nIntake summary (dispute): The customer wants to dispute a $120 Volta Electronics charge dated June 12 that they do not recognize. The charge’s year and posting status are not provided, so eligibility cannot be determined from the ticket.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 212,
+    "latency_ms": 1256.6473339684308,
+    "model": "gpt-6-luna",
+    "output_tokens": 56,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"How to dispute an unrecognized card charge: eligibility, required details, and time limits based on transaction date and posting status\",\"What to do about an unrecognized card transaction: lock or replace card, report fraud, and dispute escalation rules\"]}"
+  }
+}

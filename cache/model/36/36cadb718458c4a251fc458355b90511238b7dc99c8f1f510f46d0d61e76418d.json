@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_028.\n\nTicket from customer cus_028:\nI upgraded to Plus last week but honestly it's not worth it for me. Can you cancel it and give me my money back?\n\nIntake summary (plan): The customer wants to cancel their Plus plan and receive a refund for the charge after upgrading last week.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 186,
+    "latency_ms": 1044.736957992427,
+    "model": "gpt-6-luna",
+    "output_tokens": 37,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"Plus plan cancellation policy and how to cancel\",\"Plus plan refund eligibility for recent upgrades and refund time limits\",\"Plus subscription billing charges and cancellation effective date\"]}\n"
+  }
+}

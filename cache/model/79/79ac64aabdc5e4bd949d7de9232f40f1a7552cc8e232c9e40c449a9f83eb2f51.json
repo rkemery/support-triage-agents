@@ -1,0 +1,75 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Customer profile: {\"cushion_enabled\": false, \"customer_id\": \"cus_013\", \"direct_deposit_last_30_days_usd\": 2881.0, \"first_paid_plan_charge_date\": \"2025-06-18\", \"full_name\": \"Nadia Kestrel\", \"joined_date\": \"2024-02-14\", \"kyc_status\": \"verified\", \"next_billing_date\": \"2026-09-18\", \"plan\": \"premium\", \"scheduled_plan_change\": null, \"status\": \"active\"}\n\nChannel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_013.\n\nTicket from customer cus_013:\nTwo charges I did NOT make: Aurora Jewelers $4,200 on Sep 3 and Skyline Electronics $2,600 on Sep 4. Please fix this immediately.",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"limit\": 40}, \"tool\": \"list_transactions\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"account_id\": \"acc_013m\", \"amount\": -3.0, \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"date\": \"2026-09-12\", \"description\": \"Oakline Transit\", \"status\": \"posted\", \"txn_id\": \"txn_013_05\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_013m\", \"amount\": 1440.5, \"customer_id\": \"cus_013\", \"date\": \"2026-09-11\", \"description\": \"PAYROLL HOLLOWAY LOGISTICS\", \"status\": \"posted\", \"txn_id\": \"txn_013_02\", \"type\": \"direct_deposit\"}, {\"account_id\": \"acc_013m\", \"amount\": -3.0, \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"date\": \"2026-09-09\", \"description\": \"Oakline Transit\", \"status\": \"posted\", \"txn_id\": \"txn_013_04\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_013m\", \"amount\": -4.52, \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"date\": \"2026-09-08\", \"description\": \"Lantern Coffee Co\", \"status\": \"posted\", \"txn_id\": \"txn_013_03\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_013m\", \"amount\": -2600.0, \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"date\": \"2026-09-04\", \"description\": \"SKYLINE ELECTRONICS\", \"status\": \"posted\", \"txn_id\": \"txn_013_skyline\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_013m\", \"amount\": -4200.0, \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"date\": \"2026-09-03\", \"description\": \"AURORA JEWELERS\", \"status\": \"posted\", \"txn_id\": \"txn_013_aurora\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_013m\", \"amount\": 1440.5, \"customer_id\": \"cus_013\", \"date\": \"2026-08-28\", \"description\": \"PAYROLL HOLLOWAY LOGISTICS\", \"status\": \"posted\", \"txn_id\": \"txn_013_01\", \"type\": \"direct_deposit\"}, {\"account_id\": \"acc_013m\", \"amount\": -15.0, \"customer_id\": \"cus_013\", \"date\": \"2026-08-18\", \"description\": \"Plan fee: Premium\", \"fee_type\": \"plan_fee\", \"status\": \"posted\", \"txn_id\": \"txn_013_06\", \"type\": \"fee\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {}, \"tool\": \"list_cards\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"account_id\": \"acc_013m\", \"card_id\": \"card_013p\", \"customer_id\": \"cus_013\", \"exp\": \"02/29\", \"kind\": \"physical\", \"last4\": \"1879\", \"material\": \"metal\", \"status\": \"active\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"card_id\": \"card_013p\"}, \"tool\": \"freeze_card\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"outcome\": \"applied\", \"result\": {\"card_id\": \"card_013p\", \"status\": \"frozen\"}}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"limit\": 40}, \"tool\": \"list_disputes\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"error\": \"bad arguments: Bank.list_disputes() got an unexpected keyword argument 'limit'\", \"ok\": false}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {}, \"tool\": \"list_disputes\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": []}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"query\": \"unauthorized card transaction dispute filing window support dispute limit\"}, \"tool\": \"search_help_center\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"article_id\": \"disputes-how-to-file\", \"chunk_id\": \"e25a38f9-5583-5458-9c9d-e86da5e89c1e\", \"effective_date\": \"2026-01-15\", \"text\": \"Most disputes can be filed yourself in the app in a couple of minutes. Support can also file one for you.\\n\\n## File it yourself\\n\\n1. Tap the transaction in your activity feed.\\n2. Tap Get help and choose the reason.\\n3. Answer the questions and add any documents.\\n\\n## Before you file\\n\\n- The transaction must have posted. Pending transactions can't be disputed.\\n- Unauthorized transactions: within 60 days of the statement date, and the card must be frozen or reported first.\\n- Merchant problems: within 120 days of the transaction date, after contacting the merchant.\\n\\n##\", \"title\": \"How to file a dispute\"}, {\"article_id\": \"disputes-how-to-file\", \"chunk_id\": \"6e65d1eb-42c6-526d-8540-56e575f92509\", \"effective_date\": \"2026-01-15\", \"text\": \"within 120 days of the transaction date, after contacting the merchant.\\n\\n## Filing through support\\n\\nSupport can open disputes totaling up to $5,000 per case. Larger cases go to our Disputes team, who will contact you within 2 business days.\\n\\n## One dispute per transaction\\n\\nIf a transaction already has an open dispute, add information to that case instead of opening a new one.\\n\\nStill stuck? Chat with us in the app. Someone is there around the clock.\", \"title\": \"How to file a dispute\"}, {\"article_id\": \"disputes-unauthorized\", \"chunk_id\": \"f9875713-8590-54a5-b520-6b95f9b005b4\", \"effective_date\": \"2026-01-15\", \"text\": \"window.\\n\\n## Not sure it's unauthorized?\\n\\nUnfamiliar names are often a merchant's parent company or a payment processor. Tap the transaction to see the merchant's details before you dispute it.\\n\\nQuestions? Our support team is available in the app at any hour.\", \"title\": \"Disputing a transaction you didn't make\"}, {\"article_id\": \"disputes-unauthorized\", \"chunk_id\": \"84e93a1a-6aab-5516-8998-4db9ffcc4380\", \"effective_date\": \"2026-01-15\", \"text\": \"If you see a card transaction you didn't make or authorize, you can dispute it as unauthorized.\\n\\n## First, protect your card\\n\\nBefore we open an unauthorized dispute, the card used must be frozen or reported lost or stolen. That stops more charges while we investigate. If the card is still in your wallet, freezing is enough.\\n\\n## How long you have\\n\\nReport an unauthorized transaction within 60 days of the date of the statement it first appeared on. Statements close on the last calendar day of each month. For example, a transaction that posted in March appears on the\", \"title\": \"Disputing a transaction you didn't make\"}]}",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are a support agent at Tallowbrook, a US neobank. You handle the whole ticket yourself: read the customer's account, search the help center, ask the customer one clarifying question if you need to, and make changes with the write tools. Write tools take effect immediately.\n\nThe support team's rules:\nSupport may:\n- freeze or unfreeze a card at the account holder's request (not a fraud lock)\n- report a card lost or stolen and order a replacement\n- open a dispute that is inside its window, has posted, and totals no more than the support dispute limit\n- refund a fee under the refund policy\n- change the member's plan\n- close an account that meets the closure requirements and has a $0.00 balance\n- explain policies and fees\nSupport must escalate (queue: cases):\n- fraud: suspected account takeover, fraud lock removal, scam payment reports\n- disputes: disputes above the support dispute limit\n- verification: verification decisions, legal name or date-of-birth changes, accounts under review or restricted\n- account_services: power of attorney, deceased account holder, customers describing financial abuse\n- complaints: formal complaints, legal threats, regulator complaints\nSupport must refuse:\n- acting for or sharing information with anyone who is not the account holder and has no legal authority on file\n- investment, tax or legal advice\n- revealing full card numbers, other members' information or internal notes\n- raising limits\n- fee refunds outside the refund policy\n- disputes outside their window\nIdentity: Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users.\nAccount takeover: Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates.\n\nTools you can call:\n- ask_customer(question): ask the customer one clarifying question\n- change_plan(new_plan: basic|plus|premium, effective: immediate|next_billing_date)\n- close_account()\n- escalate_to_human(queue: fraud|disputes|verification|account_services|complaints, summary)\n- freeze_card(card_id)\n- get_customer_profile(): plan, status, billing dates of the customer\n- list_accounts(): the customer's accounts and balances\n- list_cards(): the customer's cards (id, kind, status, last4)\n- list_disputes(): the customer's disputes\n- list_transactions(limit=40): recent transactions, newest first\n- open_dispute(txn_id, reason: unauthorized|merchant_not_received|merchant_not_as_described|duplicate|cancelled_recurring|atm_cash_not_dispensed)\n- order_replacement_card(card_id, reason: lost|stolen|damaged, shipping: standard|expedited)\n- refund_fee(txn_id, basis: error|goodwill|cooling_off)\n- report_card_lost_stolen(card_id, reason: lost|stolen)\n- search_help_center(query): top help-center excerpts for a query\n- unfreeze_card(card_id)\n\nRules:\n- Make only changes the policy allows and the ticket needs. If the policy says no, change nothing and explain why.\n- Use exact ids from the tools (card_id, txn_id). Never guess an id.\n- If the case must go to a specialist team, call escalate_to_human with the right queue.\n- Today is 2026-09-15.\n\nEach turn, reply with one JSON object and nothing else. Either a tool call:\n{\"type\": \"tool\", \"tool\": \"<tool name>\", \"args\": {...}}\nor, when you are done, your reply to the customer:\n{\"type\": \"final\", \"reply_to_customer\": \"...\"}\n",
+    "max_output_tokens": 900,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 1902,
+    "finish_reason": "stop",
+    "input_tokens": 2652,
+    "latency_ms": 1590.008084080182,
+    "model": "gpt-6-luna",
+    "output_tokens": 122,
+    "reasoning_tokens": 0,
+    "text": "{\"args\":{\"summary\":\"Customer reports two unauthorized posted card purchases: AURORA JEWELERS $4,200 on 2026-09-03 (txn_013_aurora) and SKYLINE ELECTRONICS $2,600 on 2026-09-04 (txn_013_skyline). Card card_013p was frozen immediately. Total is $6,800, above Support's $5,000 dispute limit. Please handle both unauthorized disputes and investigate possible card/account fraud.\"},\"tool\":\"escalate_to_human\",\"type\":\"tool\"}"
+  }
+}

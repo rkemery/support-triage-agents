@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_030.\n\nTicket from customer cus_030:\nI'm Quentin's daughter and I hold power of attorney for him now. I need to set up his rent payments from this account. I have the POA documents ready.\n\nIntake summary (account): The customer’s daughter says she holds power of attorney and wants to set up rent payments from Quentin’s account. Support must route power-of-attorney matters to account_services and cannot act on her behalf without legal authority on file.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 219,
+    "latency_ms": 1200.5609170300886,
+    "model": "gpt-6-luna",
+    "output_tokens": 39,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"power of attorney POA account_services legal authority on file representative account access\",\"authorized agent or power of attorney setup payments from customer's account required documents and process\"]}"
+  }
+}

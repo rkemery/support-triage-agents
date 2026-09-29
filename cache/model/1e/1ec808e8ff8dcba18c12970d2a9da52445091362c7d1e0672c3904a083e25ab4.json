@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_002.\n\nTicket from customer cus_002:\nThere's a charge from last week I don't recognize. Can you dispute it?\n\nWe asked: Which charge would you like to dispute? Please share the merchant and amount.\nThe customer answered: It's the $73.15 charge from QK*MARKETHUB on Sep 8. His card is in his wallet. He agrees to freezing it if asked, but doesn't want a replacement.\n\nIntake summary (dispute): The customer wants to dispute an unrecognized charge from last week. The charge is not identified, so it’s unclear which transaction they mean.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 246,
+    "latency_ms": 1324.4086250197142,
+    "model": "gpt-6-luna",
+    "output_tokens": 44,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"dispute an unrecognized card charge: transaction identification requirements, filing time limits, and how to submit a dispute\",\"card freeze and replacement rules when disputing an unrecognized charge\"]}"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_017.\n\nTicket from customer cus_017:\nThe ATM on 5th street didn't give me any cash but my account shows a $200 withdrawal on Sep 9. What do I do?\n\nIntake summary (dispute): The customer says a $200 ATM withdrawal posted on Sep 9, but the ATM dispensed no cash. They want to know what to do about the charge.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 204,
+    "latency_ms": 1112.1954580303282,
+    "model": "gpt-6-luna",
+    "output_tokens": 36,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"ATM withdrawal charged but no cash dispensed dispute how to report and required information\",\"ATM cash not received dispute provisional credit investigation timeline and escalation\"]}"
+  }
+}

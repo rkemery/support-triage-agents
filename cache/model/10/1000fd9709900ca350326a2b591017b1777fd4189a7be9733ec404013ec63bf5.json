@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_026.\n\nTicket from customer cus_026:\nI just got an email saying my password was changed and I DIDN'T do that. There's also a BrookPay payment for $480 to someone called jaxon_r22 that I never sent. Help!\n\nIntake summary (fraud): The customer reports an unauthorized password change and a $480 BrookPay payment they did not send, suggesting possible account takeover. Freeze the member’s cards and escalate to the Fraud team.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 218,
+    "latency_ms": 4679.327166057192,
+    "model": "gpt-6-luna",
+    "output_tokens": 48,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"Report an unauthorized password change or suspected account takeover: secure the account, reset credentials, and escalate to Fraud\",\"Report an unauthorized BrookPay payment: dispute deadlines, investigation process, and Fraud escalation rules\"]}"
+  }
+}

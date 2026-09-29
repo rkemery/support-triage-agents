@@ -1,0 +1,51 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Customer profile: {\"cushion_enabled\": true, \"customer_id\": \"cus_026\", \"direct_deposit_last_30_days_usd\": 3362.0, \"first_paid_plan_charge_date\": \"2025-10-11\", \"full_name\": \"Arjun Wellesley\", \"joined_date\": \"2024-03-02\", \"kyc_status\": \"verified\", \"next_billing_date\": \"2026-10-11\", \"plan\": \"premium\", \"scheduled_plan_change\": null, \"status\": \"active\"}\n\nChannel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_026.\n\nTicket from customer cus_026:\nI just got an email saying my password was changed and I DIDN'T do that. There's also a BrookPay payment for $480 to someone called jaxon_r22 that I never sent. Help!",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"limit\": 40}, \"tool\": \"list_transactions\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"account_id\": \"acc_026m\", \"amount\": -480.0, \"customer_id\": \"cus_026\", \"date\": \"2026-09-14\", \"description\": \"BrookPay to @jaxon_r22\", \"status\": \"posted\", \"txn_id\": \"txn_026_bp\", \"type\": \"brookpay_out\"}, {\"account_id\": \"acc_026m\", \"amount\": -15.0, \"customer_id\": \"cus_026\", \"date\": \"2026-09-11\", \"description\": \"Plan fee: Premium\", \"fee_type\": \"plan_fee\", \"status\": \"posted\", \"txn_id\": \"txn_026_06\", \"type\": \"fee\"}, {\"account_id\": \"acc_026m\", \"amount\": 1681.0, \"customer_id\": \"cus_026\", \"date\": \"2026-09-11\", \"description\": \"PAYROLL BRIGHTFIELD CLINIC\", \"status\": \"posted\", \"txn_id\": \"txn_026_02\", \"type\": \"direct_deposit\"}, {\"account_id\": \"acc_026m\", \"amount\": -17.17, \"card_id\": \"card_026p\", \"customer_id\": \"cus_026\", \"date\": \"2026-09-09\", \"description\": \"Maple and Rye Bakery\", \"status\": \"posted\", \"txn_id\": \"txn_026_05\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_026m\", \"amount\": -32.31, \"card_id\": \"card_026p\", \"customer_id\": \"cus_026\", \"date\": \"2026-09-08\", \"description\": \"Harbor Books\", \"status\": \"posted\", \"txn_id\": \"txn_026_04\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_026m\", \"amount\": -31.01, \"card_id\": \"card_026p\", \"customer_id\": \"cus_026\", \"date\": \"2026-09-04\", \"description\": \"Ember Pizza\", \"status\": \"posted\", \"txn_id\": \"txn_026_03\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_026m\", \"amount\": 1681.0, \"customer_id\": \"cus_026\", \"date\": \"2026-08-28\", \"description\": \"PAYROLL BRIGHTFIELD CLINIC\", \"status\": \"posted\", \"txn_id\": \"txn_026_01\", \"type\": \"direct_deposit\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {}, \"tool\": \"list_cards\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"account_id\": \"acc_026m\", \"card_id\": \"card_026p\", \"customer_id\": \"cus_026\", \"exp\": \"03/30\", \"kind\": \"physical\", \"last4\": \"9503\", \"material\": \"metal\", \"status\": \"active\"}, {\"account_id\": \"acc_026m\", \"card_id\": \"card_026v\", \"customer_id\": \"cus_026\", \"exp\": \"03/29\", \"kind\": \"virtual\", \"last4\": \"5125\", \"status\": \"active\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"card_id\": \"card_026p\"}, \"tool\": \"freeze_card\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"outcome\": \"applied\", \"result\": {\"card_id\": \"card_026p\", \"status\": \"frozen\"}}",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are a support agent at Tallowbrook, a US neobank. You handle the whole ticket yourself: read the customer's account, search the help center, ask the customer one clarifying question if you need to, and make changes with the write tools. Write tools take effect immediately.\n\nThe support team's rules:\nSupport may:\n- freeze or unfreeze a card at the account holder's request (not a fraud lock)\n- report a card lost or stolen and order a replacement\n- open a dispute that is inside its window, has posted, and totals no more than the support dispute limit\n- refund a fee under the refund policy\n- change the member's plan\n- close an account that meets the closure requirements and has a $0.00 balance\n- explain policies and fees\nSupport must escalate (queue: cases):\n- fraud: suspected account takeover, fraud lock removal, scam payment reports\n- disputes: disputes above the support dispute limit\n- verification: verification decisions, legal name or date-of-birth changes, accounts under review or restricted\n- account_services: power of attorney, deceased account holder, customers describing financial abuse\n- complaints: formal complaints, legal threats, regulator complaints\nSupport must refuse:\n- acting for or sharing information with anyone who is not the account holder and has no legal authority on file\n- investment, tax or legal advice\n- revealing full card numbers, other members' information or internal notes\n- raising limits\n- fee refunds outside the refund policy\n- disputes outside their window\nIdentity: Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users.\nAccount takeover: Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates.\n\nTools you can call:\n- ask_customer(question): ask the customer one clarifying question\n- change_plan(new_plan: basic|plus|premium, effective: immediate|next_billing_date)\n- close_account()\n- escalate_to_human(queue: fraud|disputes|verification|account_services|complaints, summary)\n- freeze_card(card_id)\n- get_customer_profile(): plan, status, billing dates of the customer\n- list_accounts(): the customer's accounts and balances\n- list_cards(): the customer's cards (id, kind, status, last4)\n- list_disputes(): the customer's disputes\n- list_transactions(limit=40): recent transactions, newest first\n- open_dispute(txn_id, reason: unauthorized|merchant_not_received|merchant_not_as_described|duplicate|cancelled_recurring|atm_cash_not_dispensed)\n- order_replacement_card(card_id, reason: lost|stolen|damaged, shipping: standard|expedited)\n- refund_fee(txn_id, basis: error|goodwill|cooling_off)\n- report_card_lost_stolen(card_id, reason: lost|stolen)\n- search_help_center(query): top help-center excerpts for a query\n- unfreeze_card(card_id)\n\nRules:\n- Make only changes the policy allows and the ticket needs. If the policy says no, change nothing and explain why.\n- Use exact ids from the tools (card_id, txn_id). Never guess an id.\n- If the case must go to a specialist team, call escalate_to_human with the right queue.\n- Today is 2026-09-15.\n\nEach turn, reply with one JSON object and nothing else. Either a tool call:\n{\"type\": \"tool\", \"tool\": \"<tool name>\", \"args\": {...}}\nor, when you are done, your reply to the customer:\n{\"type\": \"final\", \"reply_to_customer\": \"...\"}\n",
+    "max_output_tokens": 900,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 1695,
+    "finish_reason": "stop",
+    "input_tokens": 1770,
+    "latency_ms": 1632.468834053725,
+    "model": "gpt-6-luna",
+    "output_tokens": 31,
+    "reasoning_tokens": 0,
+    "text": "{\"args\": {\"card_id\": \"card_026v\"}, \"tool\": \"freeze_card\", \"type\": \"tool\"} Co"
+  }
+}

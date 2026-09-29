@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_014.\n\nTicket from customer cus_014:\nGoing to Japan Oct 3 to 17. Please add a travel notice so my card doesn't get blocked.\n\nIntake summary (card): The customer wants a travel notice added for a trip to Japan from October 3 to 17 to help prevent their card from being blocked.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 190,
+    "latency_ms": 1019.3241249071434,
+    "model": "gpt-6-luna",
+    "output_tokens": 53,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"Are travel notices required or available for Tallowbrook cards, and how should customers prepare for international travel?\",\"Tallowbrook card usage in Japan: international transactions, travel-related card blocks, and steps to take before traveling\"]}"
+  }
+}

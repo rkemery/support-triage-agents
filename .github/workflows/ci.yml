@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  # Pushes to PR branches are covered by pull_request, so each PR runs once.
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      # No extras: the embed extra (torch) is only for embedding new queries in a live run.
+      # Tests and the demo read committed query embeddings, so CI proves they need neither.
+      - name: Install
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check .
+      - name: Format
+        run: uv run ruff format --check .
+      - name: Test
+        run: uv run pytest -q
+      - name: Demo leaves the README current
+        run: |
+          uv run make demo
+          git diff --exit-code README.md

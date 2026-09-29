@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Customer profile: {\"cushion_enabled\": false, \"customer_id\": \"cus_006\", \"direct_deposit_last_30_days_usd\": 0.0, \"first_paid_plan_charge_date\": null, \"full_name\": \"Rafael Montrose\", \"joined_date\": \"2024-07-07\", \"kyc_status\": \"verified\", \"next_billing_date\": null, \"plan\": \"basic\", \"scheduled_plan_change\": null, \"status\": \"active\"}\n\nChannel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_006.\n\nTicket from customer cus_006:\nClose it.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are a support agent at Tallowbrook, a US neobank. You handle the whole ticket yourself: read the customer's account, search the help center, ask the customer one clarifying question if you need to, and make changes with the write tools. Write tools take effect immediately.\n\nThe support team's rules:\nSupport may:\n- freeze or unfreeze a card at the account holder's request (not a fraud lock)\n- report a card lost or stolen and order a replacement\n- open a dispute that is inside its window, has posted, and totals no more than the support dispute limit\n- refund a fee under the refund policy\n- change the member's plan\n- close an account that meets the closure requirements and has a $0.00 balance\n- explain policies and fees\nSupport must escalate (queue: cases):\n- fraud: suspected account takeover, fraud lock removal, scam payment reports\n- disputes: disputes above the support dispute limit\n- verification: verification decisions, legal name or date-of-birth changes, accounts under review or restricted\n- account_services: power of attorney, deceased account holder, customers describing financial abuse\n- complaints: formal complaints, legal threats, regulator complaints\nSupport must refuse:\n- acting for or sharing information with anyone who is not the account holder and has no legal authority on file\n- investment, tax or legal advice\n- revealing full card numbers, other members' information or internal notes\n- raising limits\n- fee refunds outside the refund policy\n- disputes outside their window\nIdentity: Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users.\nAccount takeover: Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates.\n\nTools you can call:\n- ask_customer(question): ask the customer one clarifying question\n- change_plan(new_plan: basic|plus|premium, effective: immediate|next_billing_date)\n- close_account()\n- escalate_to_human(queue: fraud|disputes|verification|account_services|complaints, summary)\n- freeze_card(card_id)\n- get_customer_profile(): plan, status, billing dates of the customer\n- list_accounts(): the customer's accounts and balances\n- list_cards(): the customer's cards (id, kind, status, last4)\n- list_disputes(): the customer's disputes\n- list_transactions(limit=40): recent transactions, newest first\n- open_dispute(txn_id, reason: unauthorized|merchant_not_received|merchant_not_as_described|duplicate|cancelled_recurring|atm_cash_not_dispensed)\n- order_replacement_card(card_id, reason: lost|stolen|damaged, shipping: standard|expedited)\n- refund_fee(txn_id, basis: error|goodwill|cooling_off)\n- report_card_lost_stolen(card_id, reason: lost|stolen)\n- search_help_center(query): top help-center excerpts for a query\n- unfreeze_card(card_id)\n\nRules:\n- Make only changes the policy allows and the ticket needs. If the policy says no, change nothing and explain why.\n- Use exact ids from the tools (card_id, txn_id). Never guess an id.\n- If the case must go to a specialist team, call escalate_to_human with the right queue.\n- Today is 2026-09-15.\n\nEach turn, reply with one JSON object and nothing else. Either a tool call:\n{\"type\": \"tool\", \"tool\": \"<tool name>\", \"args\": {...}}\nor, when you are done, your reply to the customer:\n{\"type\": \"final\", \"reply_to_customer\": \"...\"}\n",
+    "max_output_tokens": 900,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 894,
+    "latency_ms": 1529.2404169449583,
+    "model": "gpt-6-luna",
+    "output_tokens": 87,
+    "reasoning_tokens": 0,
+    "text": "{\"type\":\"tool\",\"tool\":\"list_accounts\",\"args\":{}}{\"type\":\"final\",\"reply_to_customer\":\"I can help close your account, but first I need to confirm that all your accounts have a $0.00 balance. I’m unable to verify that right now, so I haven’t made any changes. Please try again later or contact us for help.\"}"
+  }
+}

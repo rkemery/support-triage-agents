@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_013.\n\nTicket from customer cus_013:\nTwo charges I did NOT make: Aurora Jewelers $4,200 on Sep 3 and Skyline Electronics $2,600 on Sep 4. Please fix this immediately.\n\nIntake summary (fraud): The customer reports two charges they did not make and wants them addressed immediately. This may indicate fraud and requires escalation to the Fraud team.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 203,
+    "latency_ms": 1731.7706670146435,
+    "model": "gpt-6-luna",
+    "output_tokens": 43,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"Report unauthorized debit card transactions fraud: lock card, dispute charges, investigation and provisional credit timelines\",\"Fraud escalation rules for multiple unauthorized card transactions reported through verified in-app chat\"]}"
+  }
+}

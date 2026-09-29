@@ -1,0 +1,28 @@
+{
+  "dataset": "Frozen retrieval snapshot of the RAG help-center index (bge-small + BM25)",
+  "license": "CC-BY-4.0 (chunk text from the Tallowbrook dataset)",
+  "source_repo": "rag-support-assistant",
+  "source_commit": "88a3b5ce56e9253240750b6663b4cfb745c80551",
+  "files": [
+    {
+      "path": "chunks.jsonl",
+      "source_path": "snapshot/chunks.jsonl",
+      "sha256": "ba7e14e25d8cc75fb154807be4a6df72fe067cd4820f19b524b91105b10c97c9"
+    },
+    {
+      "path": "embeddings.npy",
+      "source_path": "snapshot/embeddings.npy",
+      "sha256": "905f7129d9e8f3ffdcbc05f56b2b153474ced45fe4af699ca228b29024c8276f"
+    },
+    {
+      "path": "config.json",
+      "source_path": "snapshot/config.json",
+      "sha256": "2c1598cd58634d107465801fbfb3c1ee16a0adf229b88bc5af5dee634da4f647"
+    },
+    {
+      "path": "SNAPSHOT_README.md",
+      "source_path": "snapshot/README.md",
+      "sha256": "e4c8b5582dbfd390ad60983f82df48ff1039c9fa1946128a7b7cc8a24c6e228f"
+    }
+  ]
+}

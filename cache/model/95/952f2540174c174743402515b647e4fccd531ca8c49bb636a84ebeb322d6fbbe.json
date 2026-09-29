@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_014.\n\nTicket from customer cus_014:\nGoing to Japan Oct 3 to 17. Please add a travel notice so my card doesn't get blocked.\n\nIntake summary (card): The customer wants a travel notice added for Japan from October 3 to 17 so card transactions are not blocked.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 185,
+    "latency_ms": 1232.0942919468507,
+    "model": "gpt-6-luna",
+    "output_tokens": 53,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"travel notice for debit card: how to add, supported countries, and whether notices are required to prevent transactions being blocked\",\"card travel notification Japan date range October 3–17: eligibility, setup instructions, and effective time\"]}"
+  }
+}

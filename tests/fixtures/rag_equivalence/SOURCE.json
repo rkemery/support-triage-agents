@@ -1,0 +1,10 @@
+{
+  "rag_commit": "88a3b5ce56e9253240750b6663b4cfb745c80551",
+  "n_questions": 200,
+  "files": [
+    "results/contexts/fixed-title-hybrid-bge-small-convex0.7.jsonl",
+    "results/retrieval/test/fixed-title-hybrid-bge-small-convex0.7.jsonl",
+    "results/retrieval/test/fixed-title-bm25.jsonl",
+    "results/retrieval/test/fixed-title-dense-bge-small.jsonl"
+  ]
+}

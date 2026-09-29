@@ -1,0 +1,9 @@
+# gitleaks config: the default rules plus one allowlisted path.
+# cache/query_embeddings.jsonl stores each query's sha256 under a field named
+# "key", which the generic-api-key rule flags. Those hashes are cache keys, not secrets.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "sha256 cache keys in the query embedding cache"
+paths = ['''^cache/query_embeddings\.jsonl$''']

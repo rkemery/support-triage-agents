@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_027.\n\nTicket from customer cus_027:\nMy boyfriend makes me hand over my card and PIN every payday and I'm scared to say no. What can I do?\n\nIntake summary (account): The customer describes possible financial abuse by her boyfriend, who demands her card and PIN, and asks what she can do.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 188,
+    "latency_ms": 1334.493541973643,
+    "model": "gpt-6-luna",
+    "output_tokens": 58,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"financial abuse or coercive control by partner taking debit card and PIN safety steps and support\",\"report compromised card or PIN, lock or replace card, change PIN, secure account and contact support safely\",\"financial abuse escalation and discreet communications or account safety procedures\"]}"
+  }
+}
