@@ -33,21 +33,6 @@ Offline, no keys.
 
 </details>
 
-<details>
-<summary>What's inside</summary>
-
-| Path | What it is |
-|---|---|
-| `data/tallowbrook/` | Pinned copy of the 50 agent tasks, the fake bank seed and the facts file from the synthetic Tallowbrook dataset, with a sha256 manifest. The dataset's canonical home will be a Hugging Face dataset. |
-| `data/rag_snapshot/` | Pinned copy of the RAG repo's frozen retrieval index (367 chunks, bge-small vectors, BM25 settings), with a sha256 manifest. |
-| `src/support_triage_agents/` | `bank` (the SQLite bank and its support tools), `retrieval` (hybrid search over the snapshot), `schemas` (Pydantic handoffs), `tools` (one tool layer and per-role permissions), `graph` (arms B and C), `single_agent` (arm A), `scoring` (the gold oracle and code-derived scores), `runner`, `analysis`, `crosscheck`, `estimate`, `clients` (the live client stack), `readme`, `cli`. Prompts are plain text in `prompts/`. |
-| `tests/` | pytest, no network: every gold state reproduced by the bank, the dataset's wrong moves refused, retrieval against the RAG repo's own rankings, permissions, the oracle, scoring edge cases, kill and resume. |
-| `results/` | The committed live run: harness JSONL records, one per ticket per trial, under `runs/{single-agent,graph,graph-no-review}/trial-<t>.jsonl`, the gold cross-check in `crosscheck.jsonl`, spend per run in `live_runs.jsonl` and the cost estimate in `estimate.json`. |
-| `cache/` | `query_embeddings.jsonl` holds the bge-small vector of every retrieval query seen so far, so replays need no model. After a live run, `model/` holds the replay cache of model calls. |
-| `scripts/` | `sync_data.py` (verify or refresh the vendored data) and `build_retrieval_fixture.py` (the retrieval equivalence fixture). |
-
-</details>
-
 ## Results
 
 <!-- results:start -->
@@ -147,7 +132,7 @@ What each agent may call and see is enforced in code, not only asked for in a pr
 <details>
 <summary>Client stack</summary>
 
-Every model call goes through the same stack, outermost first: the harness `CachedClient` (committed disk cache, so a replay costs nothing), `RetryingClient`, `DollarCap` (refuses any call that could take spend past the cap), this repo's `RateLimitedClient` (keeps estimated tokens per minute under the deployment quota) and the harness `FoundryClient`.
+Every model call goes through the same stack, outermost first: the [harness](https://github.com/rkemery/llm-eval-harness) `CachedClient` (committed disk cache, so a replay costs nothing), `RetryingClient`, `DollarCap` (refuses any call that could take spend past the cap), this repo's `RateLimitedClient` (keeps estimated tokens per minute under the deployment quota) and the harness `FoundryClient`.
 
 </details>
 
@@ -178,6 +163,21 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 <summary>Where the single agent's violations came from</summary>
 
 Most of the single agent's violations came from a duplicate dispute (task-015, 4 of 4 trials), closing an account with a dispute still open (task-031, 4 of 4), downgrading a plan right away, and acting on cases that belong to a specialist team. It had violations on 8 tasks where the graph had none, and never the other way around.
+
+</details>
+
+<details>
+<summary>What's inside</summary>
+
+| Path | What it is |
+|---|---|
+| `data/tallowbrook/` | Pinned copy of the 50 agent tasks, the fake bank seed and the facts file from the synthetic Tallowbrook dataset, with a sha256 manifest. The dataset's canonical home is planned as a Hugging Face dataset. |
+| `data/rag_snapshot/` | Pinned copy of the [RAG repo](https://github.com/rkemery/rag-support-assistant)'s frozen retrieval index (367 chunks, bge-small vectors, BM25 settings), with a sha256 manifest. |
+| `src/support_triage_agents/` | `bank` (the SQLite bank and its support tools), `retrieval` (hybrid search over the snapshot), `schemas` (Pydantic handoffs), `tools` (one tool layer and per-role permissions), `graph` (arms B and C), `single_agent` (arm A), `scoring` (the gold oracle and code-derived scores), `runner`, `analysis`, `crosscheck`, `estimate`, `clients` (the live client stack), `readme`, `cli`. Prompts are plain text in `prompts/`. |
+| `tests/` | pytest, no network: every gold state reproduced by the bank, the dataset's wrong moves refused, retrieval against the RAG repo's own rankings, permissions, the oracle, scoring edge cases, kill and resume. |
+| `results/` | The committed live run: harness JSONL records, one per ticket per trial, under `runs/{single-agent,graph,graph-no-review}/trial-<t>.jsonl`, the gold cross-check in `crosscheck.jsonl`, spend per run in `live_runs.jsonl` and the cost estimate in `estimate.json`. |
+| `cache/` | `query_embeddings.jsonl` holds the bge-small vector of every retrieval query seen so far, so replays need no model. After a live run, `model/` holds the replay cache of model calls. |
+| `scripts/` | `sync_data.py` (verify or refresh the vendored data) and `build_retrieval_fixture.py` (the retrieval equivalence fixture). |
 
 </details>
 
@@ -215,7 +215,7 @@ Most of the single agent's violations came from a duplicate dispute (task-015, 4
 - **BM25-only rankings can't be matched in order.** Many BM25 scores tie exactly, for example an old and a new version of an article that share every query term, and Qdrant breaks ties in its own internal order. On the 130 scored RAG test questions, the top-10 article order from this repo's BM25 matched the RAG repo's in 94 cases. Every mismatch was a tie. The hybrid ranking the Researcher uses is not affected in practice, so the tests compare BM25 on the top article and the top-10 set, and hybrid on exact order.
 - **Agents that didn't know where the ticket came from.** The first live smoke run (two tickets, one trial) failed arm B on the lost-card ticket for a setup reason. Nothing in any agent's context said the message came from the customer's own signed-in session, so the compliance reviewer sent back a correct plan because it couldn't confirm the session, then approved an empty plan telling the customer to sign in. Its other objection, that the card must be frozen before it is reported lost, was harmless: a reported card is cancelled for good, so freeze then report ends in the same bank state as report alone, in the dataset's reference model and in this bank, and the scorer counts either as a success. Every agent now gets the channel line, and the resolver gets the profile and the right to ask, which the single agent already had.
 - **Scoring on the end state alone.** An early draft of the scorer counted any ticket whose bank ended in the gold state. It would have scored a refused out-of-window dispute as a resolved ticket. That is now a test for every arm.
-- **Cut: the MCP server.** Serving the tools over a stdio MCP server was a nice-to-have in the plan. Both arms already share one in-process tool layer, which is the property that matters for a fair comparison, and the MCP SDK would add a web stack and a subprocess that the kill-and-resume path would have to survive.
+- **Cut: the MCP server.** Serving the tools over a stdio MCP server was a nice-to-have. Both arms already share one in-process tool layer, which is the property that matters for a fair comparison, and the MCP SDK would add a web stack and a subprocess that the kill-and-resume path would have to survive.
 
 </details>
 
