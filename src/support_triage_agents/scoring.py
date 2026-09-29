@@ -65,10 +65,6 @@ class SandboxResult:
     diff: dict[str, Any]
     refusals: list[dict[str, Any]]  # {"action", "kind", "reason"}
 
-    @property
-    def refused_on_policy(self) -> bool:
-        return any(r["kind"] == "policy" for r in self.refusals)
-
 
 def sandbox_apply(task: Task, actions: list[dict[str, Any]]) -> SandboxResult:
     """Apply actions to a throwaway copy of the seed bank, continuing past refusals."""

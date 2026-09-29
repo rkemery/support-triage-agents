@@ -8,7 +8,7 @@ customer. What differs is the permission set of the caller:
 |---|---|
 | intake | none (gets the customer profile in its prompt) |
 | researcher | search_help_center |
-| resolver | read-only account tools |
+| resolver | read-only account tools and ask_customer |
 | compliance | none |
 | executor | write tools (code, no model, only after approval) |
 | single_agent | everything above plus ask_customer |
@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from support_triage_agents.bank import WRITE_ACTIONS, ActionRefused, Bank
@@ -101,16 +101,11 @@ class CustomerSimulator:
         return " ".join(self._facts)
 
 
-def tool_specs(role: str) -> str:
-    return "\n".join(f"- {TOOL_SPECS[name]}" for name in sorted(ROLE_TOOLS[role]))
-
-
 @dataclass
 class Toolbox:
     bank: Bank
     retriever: HybridRetriever
     customer: CustomerSimulator
-    calls: list[dict[str, Any]] = field(default_factory=list)
 
     def call(self, role: str, name: str, args: dict[str, Any]) -> dict[str, Any]:
         """Run one tool for a role. Returns a JSON-safe result, or an error the agent can read."""
@@ -123,7 +118,6 @@ class Toolbox:
             result = self._write(name, args)
         else:
             raise ToolPermissionError(f"unknown tool {name}")
-        self.calls.append({"role": role, "tool": name, "args": args, "result": result})
         return result
 
     def _handlers(self) -> dict[str, Callable[..., Any]]:

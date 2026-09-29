@@ -64,13 +64,15 @@ def _synthetic_trials(arm_key: str, p_success: float, p_violation: float, seed: 
 def test_pending_rows_and_offline_checks_render_without_live_results(tmp_path):
     text = readme.results_section(tmp_path)
     assert "pending live run" in text
-    assert "| Do nothing (reference) | 26.0% (" in text
-    assert "| Gold actions (reference) | 100.0% (" in text
-    assert "for 50 of 50 tasks" in text
-    order = re.search(r"same order for (\d+) of 200 questions, and as a set for 200 of 200", text)
+    assert "Verdict: pending live run." in text
+    detail = readme.results_detail_section(tmp_path)
+    for section in (text, detail):
+        assert "| Do nothing (reference) | 26.0% (" in section
+        assert "| Gold actions (reference) | 100.0% (" in section
+    assert "for 50 of 50 tasks" in detail
+    order = re.search(r"same order for (\d+) of 200 questions, and as a set for 200 of 200", detail)
     assert order is not None
     assert int(order.group(1)) >= 198
-    assert "Verdict: pending live run." in text
 
 
 def test_live_rows_render_from_records(tmp_path):
@@ -85,7 +87,9 @@ def test_live_rows_render_from_records(tmp_path):
     arm_rows = [line for line in text.splitlines() if line.startswith(("| A:", "| B:", "| C:"))]
     assert len(arm_rows) == 3
     assert all("pending" not in row for row in arm_rows)
-    assert "Verdict: supported." in text  # far fewer violations in B, same success rate
+    assert (
+        "Verdict: supported. Violations fell (" in text
+    )  # far fewer violations in B, same success
     assert "k=4" in arm_rows[0]
     assert "k=2" in arm_rows[2]
 

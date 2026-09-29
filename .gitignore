@@ -21,6 +21,9 @@ htmlcov/
 # Scratch state from runs and demos (checkpoints, working bank databases)
 /runs/
 
+# Output of make smoke-live
+/results/smoke/
+
 # Local environment
 .env
 .DS_Store

@@ -23,7 +23,7 @@ test-download:
 	uv sync --extra embed
 	uv run pytest -q -m download
 
-# Offline, no keys: checks data hashes and rewrites the README results and cost sections
+# Offline, no keys: checks data hashes and rewrites the generated README sections
 # from committed files. Arm rows read "pending live run" until a live run exists.
 demo:
 	uv run triage demo --cap $(CAP)

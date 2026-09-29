@@ -38,7 +38,7 @@ from support_triage_agents.crosscheck import run_crosscheck
 from support_triage_agents.data import load_tasks
 from support_triage_agents.retrieval import cached_retriever
 from support_triage_agents.runner import ARMS, RESULTS_DIR, run_arm
-from support_triage_agents.scripted import _role, scripted_client
+from support_triage_agents.scripted import role_of, scripted_client
 
 # Typical output tokens per call, by role, for the expected-cost column.
 TYPICAL_OUTPUT_TOKENS = {
@@ -69,7 +69,7 @@ def _stage(name: str, model: str, client: FakeClient, repeats: int) -> StageEsti
     price = DEFAULT_PRICES[model]
     tpm = deployment_tpm()[model] * TPM_HEADROOM
     in_tok = sum(input_token_bound(r) for r in client.calls) / 4
-    out_tok = sum(TYPICAL_OUTPUT_TOKENS[_role(r.instructions or "")] for r in client.calls)
+    out_tok = sum(TYPICAL_OUTPUT_TOKENS[role_of(r.instructions or "")] for r in client.calls)
     expected = (in_tok * price.input_per_m + out_tok * price.output_per_m) / 1e6
     worst = sum(max_cost_usd(price, r) for r in client.calls)
     minutes = sum(estimated_tokens(r) for r in client.calls) / tpm
