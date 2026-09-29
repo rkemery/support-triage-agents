@@ -91,11 +91,11 @@ def _reference_table(tasks: Sequence[Task]) -> list[str]:
 
 def _comparisons(trials: dict[str, list[list[EvalRecord]]]) -> list[str]:
     out = [
-        "| Comparison | Metric | Difference, pts (95% CI) | p (clustered) | McNemar p, trial 1 "
+        "| Comparison | Metric | Difference, pts (95% CI) | p (clustered) | McNemar p, first trial "
         "| MDE, pts | Paired runs |",
         "|---|---|---|---|---|---|---|",
     ]
-    for base_key, cand_key in (("A", "B"), ("C", "B")):
+    for base_key, cand_key in (("A", "B"), ("C", "B"), ("A", "C")):
         base, cand = trials[base_key], trials[cand_key]
         ready = len(base) == ARMS[base_key].k and len(cand) == ARMS[cand_key].k
         label = f"{ARMS[cand_key].label.split(':')[0]} minus {ARMS[base_key].label.split(':')[0]}"
@@ -253,8 +253,8 @@ def results_section(results_dir: Path = RESULTS_DIR) -> str:
         "",
         "**Paired comparisons**, trial t of one arm against trial t of the other on the same "
         "task, clustered by task (harness clustered paired t-test, with the minimum detectable "
-        "effect at 80% power). The McNemar column uses trial 1 only, one independent pair per "
-        "task.",
+        "effect at 80% power). The McNemar column uses the first trial only, one independent "
+        "pair per task. C minus A is not pre-registered and pairs on C's two trials.",
         "",
     ]
     lines += _comparisons(trials)
