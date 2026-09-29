@@ -1,11 +1,12 @@
 """The fake Tallowbrook bank in SQLite, and the support tools that act on it.
 
 The dataset ships a reference model of what each support action does and
-which rules it enforces (`scripts/bank_sim.py` in neobank-support-data). This
-module is an independent SQLite implementation of the same semantics, so the
-two can check each other: `tests/test_bank.py` runs every task's gold actions
-through these tools and requires the resulting change to equal the task's
-`gold_final_state`, which the dataset computed with its own model.
+which rules it enforces (`scripts/bank_sim.py` in the Tallowbrook dataset, tag
+tallowbrook-v0.1 of rkemery/rag-support-assistant). This module is an independent
+SQLite implementation of the same semantics, so the two can check each other:
+`tests/test_bank.py` runs every task's gold actions through these tools and
+requires the resulting change to equal the task's `gold_final_state`, which the
+dataset computed with its own model.
 
 Design points:
 

@@ -34,7 +34,9 @@ class VendoredSource:
 TALLOWBROOK = VendoredSource(
     name="tallowbrook",
     dest=DATA_DIR / "tallowbrook",
-    source_repo="neobank-support-data",
+    source_repo=(
+        "rkemery/rag-support-assistant, tag tallowbrook-v0.1 (branch claude/tallowbrook-dataset)"
+    ),
     pinned_commit="3c72058e8cc7d5dd6e224ecdec7b814341a3d48f",
     files={
         "agents/tasks.jsonl": "tasks.jsonl",

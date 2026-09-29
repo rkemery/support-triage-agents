@@ -12,8 +12,8 @@ It is measured against a single agent with the same model, tools, docs and step 
 
 | Arm | Success (pass^1) | pass^k | State match | Policy violations | Escalation precision | Escalation recall | $ per resolved ticket | Tokens per ticket | p50 / p95 model s | Ticket runs |
 |---|---|---|---|---|---|---|---|---|---|---|
-| A: single agent | 64.5% (52.9 to 74.6) | 44.0% (30.0 to 58.0), k=4 | 70.0% (58.7 to 79.3) | 9.0% (4.1 to 18.7) | 91.7% (66.5 to 98.4) | 55.0% (28.9 to 78.6) | $0.0004 ($0.0004 to $0.0006) | 4,472 | 3.9 / 9.9 | 200 |
-| B: full graph | 81.5% (70.8 to 88.9) | 68.0% (56.0 to 80.0), k=4 | 82.0% (71.2 to 89.4) | 0.0% (0.0 to 2.0) | 75.5% (48.9 to 90.9) | 92.5% (77.6 to 97.8) | $0.0017 ($0.0014 to $0.0021) | 13,769 | 11.6 / 30.8 | 200 |
+| A: single agent | 64.5% (52.9 to 74.6) | 44.0% (30.0 to 58.0), k=4, pass^2 54.0% (42.0 to 66.3) | 70.0% (58.7 to 79.3) | 9.0% (4.1 to 18.7) | 91.7% (66.5 to 98.4) | 55.0% (28.9 to 78.6) | $0.0004 ($0.0004 to $0.0006) | 4,472 | 3.9 / 9.9 | 200 |
+| B: full graph | 81.5% (70.8 to 88.9) | 68.0% (56.0 to 80.0), k=4, pass^2 75.0% (64.0 to 85.3) | 82.0% (71.2 to 89.4) | 0.0% (0.0 to 2.0) | 75.5% (48.9 to 90.9) | 92.5% (77.6 to 97.8) | $0.0017 ($0.0014 to $0.0021) | 13,769 | 11.6 / 30.8 | 200 |
 | C: graph without compliance reviewer | 82.0% (70.4 to 89.7) | 76.0% (64.0 to 88.0), k=2 | 84.0% (72.2 to 91.4) | 3.0% (0.8 to 11.2) | 67.9% (41.2 to 86.4) | 95.0% (72.4 to 99.3) | $0.0007 ($0.0006 to $0.0008) | 5,369 | 7.2 / 14.8 | 100 |
 | Do nothing (reference) | 26.0% (15.7 to 39.9) | n/a (deterministic) | 26.0% (15.7 to 39.9) | 0.0% (0.0 to 7.5) | n/a | 0.0% (0.0 to 33.9) | n/a (no model) | 0 | n/a | 50 |
 | Gold actions (reference) | 100.0% (92.5 to 100.0) | n/a (deterministic) | 100.0% (92.5 to 100.0) | 0.0% (0.0 to 7.5) | 100.0% (66.1 to 100.0) | 100.0% (66.1 to 100.0) | n/a (no model) | 0 | n/a | 50 |
@@ -187,7 +187,7 @@ At the day-1 capacities (20K tokens per minute on gpt-6-luna and gpt-5-mini) the
 
 `make eval-live` runs everything in one process under one hard cap of $3.00 (`make eval-live CAP=...` to change it), about three times the heavier-path estimate. A refused call stops the run, and cached calls cost nothing when it is started again.
 
-Actual spend: $0.39 over 2,113 live calls in 2 run(s), from `DollarCap`.
+Actual spend: $0.39 over 2,113 live calls in 2 runs, from `DollarCap`.
 <!-- cost:end -->
 
 The run needs `AZURE_OPENAI_BASE_URL` and either `AZURE_OPENAI_API_KEY` or Entra ID (see `.env.example`). `make smoke-live` checks the live path on two tickets, one trial each, under a $0.25 cap. `make eval-live` runs arms A, B and C and the cross-check, then rewrites this README. Commit `results/` and `cache/` afterwards so `make eval-replay` and `make demo` reproduce it with no keys.

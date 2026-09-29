@@ -2,7 +2,7 @@
 
     uv run python scripts/sync_data.py        # verify every vendored file against its MANIFEST.json
     uv run python scripts/sync_data.py \\
-        --tallowbrook ../neobank-support-data --rag ../rag-support-assistant   # copy, rewrite
+        --tallowbrook ../tallowbrook-dataset --rag ../rag-support-assistant   # copy, rewrite
 
 Copy mode refuses a checkout that is not at the pinned commit or has uncommitted
 changes to the vendored files. The Tallowbrook dataset's canonical home will be
@@ -26,7 +26,11 @@ from support_triage_agents.vendor import (
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--tallowbrook", type=Path, help="neobank-support-data checkout")
+    parser.add_argument(
+        "--tallowbrook",
+        type=Path,
+        help="checkout of the Tallowbrook dataset (tag tallowbrook-v0.1)",
+    )
     parser.add_argument("--rag", type=Path, help="rag-support-assistant checkout")
     args = parser.parse_args(argv)
     try:

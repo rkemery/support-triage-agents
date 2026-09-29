@@ -59,7 +59,8 @@ def _arm_row(arm: Arm, trials: Sequence[Sequence[EvalRecord]]) -> str:
     s = analysis.spend(records)
     cells = [
         _pct(analysis.pooled_rate(records, "success")),
-        f"{_pct(pk.pass_hat_k)}, k={arm.k}",
+        f"{_pct(pk.pass_hat_k)}, k={arm.k}"
+        + (f", pass^2 {_pct(analysis.pass_hat_k(trials, 2).pass_hat_k)}" if arm.k > 2 else ""),
         _pct(analysis.pooled_rate(records, "state_match")),
         _pct(analysis.pooled_rate(records, "policy_violation")),
         _pct(analysis.escalation_precision(records)),
@@ -335,7 +336,8 @@ def _actual_spend(results_dir: Path) -> str:
     runs = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
     spent = sum(float(r.get("spent_usd", 0.0)) for r in runs)
     calls = sum(int(r.get("live_calls", 0)) for r in runs)
-    return f"${spent:.2f} over {calls:,} live calls in {len(runs)} run(s), from `DollarCap`."
+    runs_word = "run" if len(runs) == 1 else "runs"
+    return f"${spent:.2f} over {calls:,} live calls in {len(runs)} {runs_word}, from `DollarCap`."
 
 
 def render(readme: Path = README, results_dir: Path = RESULTS_DIR, cap_usd: float | None = None):

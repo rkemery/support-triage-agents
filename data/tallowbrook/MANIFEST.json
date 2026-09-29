@@ -1,7 +1,7 @@
 {
   "dataset": "Tallowbrook Neobank Support (synthetic): agent tasks, fake bank seed, facts file",
   "license": "CC-BY-4.0",
-  "source_repo": "neobank-support-data",
+  "source_repo": "rkemery/rag-support-assistant, tag tallowbrook-v0.1 (branch claude/tallowbrook-dataset)",
   "source_commit": "3c72058e8cc7d5dd6e224ecdec7b814341a3d48f",
   "files": [
     {
