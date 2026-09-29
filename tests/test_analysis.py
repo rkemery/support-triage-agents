@@ -87,7 +87,9 @@ def test_live_rows_render_from_records(tmp_path):
     arm_rows = [line for line in text.splitlines() if line.startswith(("| A:", "| B:", "| C:"))]
     assert len(arm_rows) == 3
     assert all("pending" not in row for row in arm_rows)
-    assert "Verdict: supported." in text  # far fewer violations in B, same success rate
+    assert (
+        "Verdict: supported. Violations fell (" in text
+    )  # far fewer violations in B, same success
     assert "k=4" in arm_rows[0]
     assert "k=2" in arm_rows[2]
 

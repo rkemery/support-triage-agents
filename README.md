@@ -1,10 +1,10 @@
 # support-triage-agents
 
-A LangGraph multi-agent system that triages support tickets for a fictional neobank, tested against a single agent with the same model, tools, docs and step budget on 50 tickets whose correct end state is known.
+A LangGraph multi-agent support triage system with a human approval step and a fake SQLite bank, tested against an equal single agent on 50 tickets with known end states.
 
 - **Success:** the graph resolved 81.5% of tickets against the single agent's 64.5% (+17.0 pts, p = 0.009, 200 runs per arm).
 - **Policy violations:** down from 9.0% to 0.0% (p = 0.015). The pre-registered hypothesis was half right: the graph cut violations but also resolved more tickets.
-- **Where the gap comes from:** 51 of 200 single-agent runs replied on the first call with no tool, and 31 of those failed. The graph succeeded on 26 of those pairs. Dropping the compliance reviewer kept success at under half the cost.
+- **Where the gap comes from:** 51 of 200 single-agent runs replied on the first call with no tool, and 31 of those failed. Dropping the compliance reviewer kept success at under half the cost. $0.39 total live spend.
 
 ## Quickstart
 
@@ -14,7 +14,7 @@ cd support-triage-agents
 uv run make demo
 ```
 
-`make demo` needs no keys and no model. It checks the vendored data hashes and rebuilds the generated README sections from committed results.
+Offline, no keys.
 
 <details>
 <summary>All commands</summary>
@@ -61,7 +61,7 @@ Every arm uses gpt-6-luna with the same tools, docs and step budget, on 50 tasks
 | Do nothing (reference) | 26.0% (15.7 to 39.9) | n/a (deterministic) | 0.0% (0.0 to 7.5) | n/a (no model) | 50 |
 | Gold actions (reference) | 100.0% (92.5 to 100.0) | n/a (deterministic) | 0.0% (0.0 to 7.5) | n/a (no model) | 50 |
 
-**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: half right. The graph did cut policy violations, but it also resolved more tickets, so the "not on raw resolution" half was wrong. Policy violations, B minus A: -9.0 pts (p = 0.015). Success, B minus A: +17.0 pts (p = 0.009).
+**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: half right. Violations fell (-9.0 pts, p = 0.015) but success also rose (+17.0 pts, p = 0.009).
 <!-- results:end -->
 
 <details>
@@ -140,7 +140,7 @@ What each agent may call and see is enforced in code, not only asked for in a pr
 | Intake | none | the ticket and the customer's profile |
 | Researcher | `search_help_center` | the ticket and the intake summary, no account data |
 | Resolver | read-only account tools and `ask_customer` | the ticket, the profile, intake summary, policy excerpts, its own tool results |
-| Compliance reviewer | none | the channel line, the ticket, the customer's answer to a clarifying question if one was asked, the profile, the records the plan points at, the policy excerpts and the draft |
+| Compliance reviewer | none | ticket, channel line, profile, cited records, excerpts, draft, any customer answer |
 | Executor | the nine write tools | the approved plan. It is code, not a model, and refuses a plan whose actions changed after approval. |
 | Single agent (arm A) | all of the above | everything it asks for |
 
@@ -151,31 +151,44 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 
 </details>
 
-**Pre-registered hypothesis:** the graph wins on policy violations, not on raw resolution. It was written before the full live run (only a two-ticket smoke run came before it). The verdict is computed by code with a rule set in advance: B's policy-violation rate lower than A's at p < 0.05 on the clustered paired test, and B's success not higher than A's at p < 0.05.
+**Pre-registered hypothesis:** the graph wins on policy violations, not on raw resolution, because a reviewer that sees only facts should stop bad actions while extra handoffs lose information. It was written before the full live run (only a two-ticket smoke run came before it). The verdict is computed by code with a rule set in advance: B's policy-violation rate lower than A's at p < 0.05 on the clustered paired test, and B's success not higher than A's at p < 0.05.
 
 | Metric | Definition |
 |---|---|
 | Success | The bank ends in the task's gold state (the change its gold actions produce in the dataset's own bank model), with no policy violation, no plan rejected at review and a finished ticket. A refused out-of-window dispute leaves the bank in the seed state, which is the gold state, so the end state alone would count it as a win. |
 | State match | The bank ends in the gold state, whatever happened on the way. The gap to success shows how often a bank rule or the reviewer rescued a wrong intent. |
-| Attempts | Arm A writes directly, so its attempts are every write in the bank's action log for the ticket, applied or refused. Arms B and C propose, so theirs are the plan that reached human review, checked in a throwaway copy of the bank. |
 | Policy violation | An attempted write the bank refuses under a support rule (a dispute outside its window, a goodwill refund used twice in a year, closing an account with money in it, acting on another customer's card), or any non-escalation write on a ticket the rules send to a specialist team. |
-| Human approval | Every plan with a write pauses at `interrupt()`. A scripted oracle approves it exactly when running it in a copy of the bank gives the gold state with no refusal. It never edits, and a rejection counts as a failure, so it can stop a bad plan but never turn it into a success. |
 | pass^k | The chance all k trials of a ticket succeed (A and B k=4, C k=2), from tau-bench (Yao et al., [arXiv 2406.12045](https://arxiv.org/abs/2406.12045)). An agent right three times out of four still mishandles a quarter of the queue. The trial index is in every request, so the replay cache keeps trials apart. |
+
+<details>
+<summary>Other metrics and error bars</summary>
+
+| Metric | Definition |
+|---|---|
+| Attempts | Arm A writes directly, so its attempts are every write in the bank's action log for the ticket, applied or refused. Arms B and C propose, so theirs are the plan that reached human review, checked in a throwaway copy of the bank. |
+| Human approval | Every plan with a write pauses at `interrupt()`. A scripted oracle approves it exactly when running it in a copy of the bank gives the gold state with no refusal. It never edits, and a rejection counts as a failure, so it can stop a bad plan but never turn it into a success. |
 | Escalation precision and recall | Against each task's `should_escalate` label. |
 | $ per resolved ticket | All spend divided by successes, so failures are paid for. Tokens per ticket and p50/p95 model seconds per ticket are reported too. |
 | Failure categories | Missing action, extra action, wrong arguments, wrong escalation (escalated when it should not, did not when it should, or picked the wrong queue), policy violation and incomplete. Derived by code from what an arm tried against the gold actions, with no hand tagging. |
 | Error bars | Rates pool every trial with the harness's clustered Wilson interval, tasks as clusters, because four trials of one ticket are not four independent tickets (Miller, "Adding Error Bars to Evals", [arXiv 2411.00640](https://arxiv.org/abs/2411.00640)). Arm comparisons pair trial t with trial t on the same ticket and use the harness's clustered paired t-test with a minimum detectable effect, plus an exact McNemar test on the first trial alone (McNemar 1947). pass^k and dollars per resolved ticket get bootstrap intervals over tasks. |
 
+</details>
+
+<details>
+<summary>Where the single agent's violations came from</summary>
+
 Most of the single agent's violations came from a duplicate dispute (task-015, 4 of 4 trials), closing an account with a dispute still open (task-031, 4 of 4), downgrading a plan right away, and acting on cases that belong to a specialist team. It had violations on 8 tasks where the graph had none, and never the other way around.
+
+</details>
 
 ## Design decisions
 
 | Decision | Why |
 |---|---|
-| Agents differ in permissions and context, not just prompts | The resolver has no write tools and the executor has no model. The compliance reviewer's input is a Pydantic model with no field for the resolver's tool transcript or for anything the customer hasn't said. Tests check what each node is given. |
-| Side effects only after the interrupt, and idempotent anyway | LangGraph re-runs a node from its first line on resume ([LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)). `human_review` does nothing before `interrupt()`, writes live in a separate executor node, each write is keyed on (ticket, sha256 of the action) in the same SQLite transaction, and checkpoints use `durability="sync"`. |
-| A bank that checks the dataset | A separate SQLite implementation of the dataset's reference rules (integer cents, foreign keys, a log of every attempt). It reproduces all 50 gold end states and refuses the 17 wrong moves the dataset's own tests use. Share data, not code. |
-| A single-agent baseline on equal terms | Simpler designs often match elaborate ones (Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), 2024, and Cemri et al., [arXiv 2503.13657](https://arxiv.org/abs/2503.13657)). Arm A gets the same model, tools, snapshot, support rules and budget of 16 model calls per ticket. |
+| Agents differ in permissions and context, not just prompts | The resolver has no write tools, the executor has no model and the reviewer's Pydantic input has no field for the tool transcript, all checked by tests. |
+| Side effects only after the interrupt, and idempotent anyway | LangGraph re-runs a node from its first line on resume ([LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)), so `human_review` does nothing before `interrupt()`, a separate executor keys each write on (ticket, sha256 of the action) and checkpoints use `durability="sync"`. |
+| A bank that checks the dataset | A separate SQLite implementation of the dataset's rules reproduces all 50 gold end states and refuses the 17 wrong moves the dataset's own tests use. |
+| A single-agent baseline on equal terms | Simpler designs often match elaborate ones (Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), 2024, and Cemri et al., [arXiv 2503.13657](https://arxiv.org/abs/2503.13657)), so arm A gets the same model, tools, snapshot, rules and 16-call budget. |
 
 <details>
 <summary>More decisions</summary>
@@ -210,7 +223,7 @@ Most of the single agent's violations came from a duplicate dispute (task-015, 4
 
 - **No human labels.** The tickets, gold actions and policies were written by an AI. The gold end states were computed by the dataset's bank model and agree with this repo's independent bank, and a second model (gpt-5-mini) cross-checks every task's resolution in the live run. Disagreements are listed, not adjudicated. No person has audited the tasks.
 - **50 tickets.** Intervals are wide and small differences are invisible. The minimum detectable effect is printed next to every comparison.
-- **A generous simulated customer.** Any clarifying question gets every hidden fact at once, and those facts were written alongside the gold resolution, so some of them point at the right actions. A real customer might answer only what was asked. The graph asked in 58 of 200 runs and the single agent in 17, but asking doesn't carry the gap: on the 140 (task, trial) pairs where neither arm asked, B minus A is +16.4 pts. An LLM customer simulator was left out to keep replays exact.
+- **A generous simulated customer.** Any clarifying question gets every hidden fact at once, and those facts were written alongside the gold resolution, so some of them point at the right actions. A real customer might answer only what was asked. Where neither arm asked, B minus A is still +16.4 pts on 140 pairs.
 - **A perfect reviewer.** The oracle never errs, so this measures what reaches the reviewer, not how a tired person would judge it.
 
 <details>
@@ -225,6 +238,7 @@ Most of the single agent's violations came from a duplicate dispute (task-015, 4
   - The compliance reviewer sees only the records a plan points at, so it can't check an action that is missing against records nobody cited.
   - The oracle rejects a plan on any bank refusal, including invalid arguments, while the single agent sees the tool error and can retry (8 of its runs had an invalid write and 4 still succeeded), which favors the single agent.
   - After the second bounce the plan goes to human review even if the reviewer still objects.
+- **Who asked.** The graph asked a clarifying question in 58 of 200 runs and the single agent in 17. An LLM customer simulator was left out to keep replays exact.
 - **One action per reply.** When a reply holds more than one JSON object (a tool call followed by a plan written before the tool answered), only the first counts.
 - **One model and one prompt set.** gpt-6-luna at reasoning effort none, with no prompt tuning on these tasks. The JSON action protocol may understate what native tool calling would do.
 - **Latency is model time only.** Tool calls and local compute (milliseconds here) are left out. Replayed runs report the latency measured on the original call.
