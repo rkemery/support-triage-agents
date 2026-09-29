@@ -122,9 +122,22 @@ def _verdict(trials: dict[str, list[list[EvalRecord]]]) -> str:
     succ = analysis.compare_arms(a, b, "success").clustered.comparison
     fewer_violations = viol.pvalue is not None and viol.pvalue < 0.05 and viol.diff < 0
     better_resolution = succ.pvalue is not None and succ.pvalue < 0.05 and succ.diff > 0
-    supported = fewer_violations and not better_resolution
+    if fewer_violations and not better_resolution:
+        verdict = "supported"
+    elif fewer_violations:
+        verdict = (
+            "half right. The graph did cut policy violations, but it also resolved more "
+            'tickets, so the "not on raw resolution" half was wrong'
+        )
+    elif better_resolution:
+        verdict = (
+            "not supported. The graph resolved more tickets but did not cut policy "
+            "violations significantly"
+        )
+    else:
+        verdict = "not supported. Neither difference is significant"
     return (
-        f"Verdict: {'supported' if supported else 'not supported'}. "
+        f"Verdict: {verdict}. "
         f"Policy violations, B minus A: {viol.diff * 100:+.1f} pts ({_p_eq(viol.pvalue)}). "
         f"Success, B minus A: {succ.diff * 100:+.1f} pts ({_p_eq(succ.pvalue)})."
     )

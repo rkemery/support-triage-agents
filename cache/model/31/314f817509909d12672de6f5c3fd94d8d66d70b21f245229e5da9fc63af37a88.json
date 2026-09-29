@@ -1,0 +1,51 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Customer profile: {\"cushion_enabled\": false, \"customer_id\": \"cus_025\", \"direct_deposit_last_30_days_usd\": 3325.0, \"first_paid_plan_charge_date\": \"2025-09-10\", \"full_name\": \"Maribel Ostrander\", \"joined_date\": \"2024-02-01\", \"kyc_status\": \"verified\", \"next_billing_date\": \"2026-10-10\", \"plan\": \"plus\", \"scheduled_plan_change\": null, \"status\": \"active\"}\n\nChannel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_025.\n\nTicket from customer cus_025:\nI got charged $5 for my replacement card in August but I'm on Plus and I thought replacements were free?",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"query\": \"Plus plan replacement card fee free replacement cards replacement fee policy\"}, \"tool\": \"search_help_center\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"article_id\": \"card-replacement-plus\", \"chunk_id\": \"da1185e2-6a49-5dc8-ac2e-1ca55f9d09a2\", \"effective_date\": \"2025-01-01\", \"text\": \"This is what a replacement card costs on the Plus plan, whether it's lost, stolen or damaged.\\n\\n| | Cost |\\n|---|---|\\n| Replacement card | free |\\n| Standard shipping (7 to 10 business days) | free |\\n| Expedited shipping (2 to 3 business days) | $25.00 |\\n\\nOn Plus the card itself is free. You only pay if you choose expedited shipping.\\n\\n## When we don't charge\\n\\nThere's no fee when a card is lost in the mail, when we replace a card because of a problem on our side,\", \"title\": \"Card replacement fees on Plus\"}, {\"article_id\": \"plan-plus\", \"chunk_id\": \"23f40029-6673-5f86-84f7-68a504b2297f\", \"effective_date\": \"2026-06-01\", \"text\": \"**Card replacement:** free\\n- **Expedited card shipping:** $25.00\\n- **Savings Pockets:** 2.00% APY\\n- **Cushion:** fee-free coverage up to $50.00 on debit card purchases\\n- **Daily card spending limit:** $5,000\\n- **Daily ATM limit:** $1,000\\n\\n## Good to know\\n\\nPlus includes outgoing international wires for $35.00 each. Your card is plastic, like Basic. Upgrade to Premium if you want the metal card.\\n\\nYou can change plans any time in the app\", \"title\": \"The Plus plan\"}, {\"article_id\": \"card-replacement-premium\", \"chunk_id\": \"3abc2eb0-61e6-5169-8794-fc4a8414a68b\", \"effective_date\": \"2025-01-01\", \"text\": \"This is what a replacement card costs on the Premium plan, whether it's lost, stolen or damaged.\\n\\n| | Cost |\\n|---|---|\\n| Replacement card | free |\\n| Standard shipping (7 to 10 business days) | free |\\n| Expedited shipping (2 to 3 business days) | free |\\n\\nOn Premium both the card and expedited shipping are free.\\n\\nYour replacement is a metal card.\\n\\n## When we don't charge\\n\\nThere's no fee when a card is lost in the mail, when we replace a card because of a problem on our side, or for\", \"title\": \"Card replacement fees on Premium\"}, {\"article_id\": \"plan-plus\", \"chunk_id\": \"bc8c362e-9625-5342-a289-e60de06c86db\", \"effective_date\": \"2026-06-01\", \"text\": \"Plus costs $5.00 a month. It's built for people who use their card a lot away from BrookLink ATMs or spend some time abroad, and it adds Cushion and a higher savings rate.\\n\\n## What's included\\n\\n- **Monthly fee:** $5.00\\n- **ATMs:** free at BrookLink ATMs, plus 3 free out-of-network withdrawals a month. After that it's $2.50 per withdrawal.\\n- **Foreign transaction fee:** 1% of the purchase amount\\n- **Card replacement:** free\\n- **Expedited card shipping:**\", \"title\": \"The Plus plan\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"limit\": 40}, \"tool\": \"list_transactions\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"result\": [{\"account_id\": \"acc_025m\", \"amount\": -36.73, \"card_id\": \"card_025p\", \"customer_id\": \"cus_025\", \"date\": \"2026-09-12\", \"description\": \"Ember Pizza\", \"status\": \"posted\", \"txn_id\": \"txn_025_05\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_025m\", \"amount\": 1662.5, \"customer_id\": \"cus_025\", \"date\": \"2026-09-11\", \"description\": \"PAYROLL HOLLOWAY LOGISTICS\", \"status\": \"posted\", \"txn_id\": \"txn_025_02\", \"type\": \"direct_deposit\"}, {\"account_id\": \"acc_025m\", \"amount\": -5.0, \"customer_id\": \"cus_025\", \"date\": \"2026-09-10\", \"description\": \"Plan fee: Plus\", \"fee_type\": \"plan_fee\", \"status\": \"posted\", \"txn_id\": \"txn_025_06\", \"type\": \"fee\"}, {\"account_id\": \"acc_025m\", \"amount\": -27.65, \"card_id\": \"card_025p\", \"customer_id\": \"cus_025\", \"date\": \"2026-09-07\", \"description\": \"Cobalt Cinema\", \"status\": \"posted\", \"txn_id\": \"txn_025_04\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_025m\", \"amount\": -44.16, \"card_id\": \"card_025p\", \"customer_id\": \"cus_025\", \"date\": \"2026-09-06\", \"description\": \"Quickfuel 88\", \"status\": \"posted\", \"txn_id\": \"txn_025_03\", \"type\": \"card_purchase\"}, {\"account_id\": \"acc_025m\", \"amount\": -5.0, \"customer_id\": \"cus_025\", \"date\": \"2026-08-30\", \"description\": \"Card replacement fee\", \"fee_type\": \"card_replacement\", \"status\": \"posted\", \"txn_id\": \"txn_025_replfee\", \"type\": \"fee\"}, {\"account_id\": \"acc_025m\", \"amount\": 1662.5, \"customer_id\": \"cus_025\", \"date\": \"2026-08-28\", \"description\": \"PAYROLL HOLLOWAY LOGISTICS\", \"status\": \"posted\", \"txn_id\": \"txn_025_01\", \"type\": \"direct_deposit\"}]}",
+        "role": "user"
+      },
+      {
+        "content": "{\"args\": {\"basis\": \"error\", \"txn_id\": \"txn_025_replfee\"}, \"tool\": \"refund_fee\", \"type\": \"tool\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Tool result: {\"ok\": true, \"outcome\": \"applied\", \"result\": {\"amount\": 5.0, \"refund_txn_id\": \"txn_new01\"}}",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are a support agent at Tallowbrook, a US neobank. You handle the whole ticket yourself: read the customer's account, search the help center, ask the customer one clarifying question if you need to, and make changes with the write tools. Write tools take effect immediately.\n\nThe support team's rules:\nSupport may:\n- freeze or unfreeze a card at the account holder's request (not a fraud lock)\n- report a card lost or stolen and order a replacement\n- open a dispute that is inside its window, has posted, and totals no more than the support dispute limit\n- refund a fee under the refund policy\n- change the member's plan\n- close an account that meets the closure requirements and has a $0.00 balance\n- explain policies and fees\nSupport must escalate (queue: cases):\n- fraud: suspected account takeover, fraud lock removal, scam payment reports\n- disputes: disputes above the support dispute limit\n- verification: verification decisions, legal name or date-of-birth changes, accounts under review or restricted\n- account_services: power of attorney, deceased account holder, customers describing financial abuse\n- complaints: formal complaints, legal threats, regulator complaints\nSupport must refuse:\n- acting for or sharing information with anyone who is not the account holder and has no legal authority on file\n- investment, tax or legal advice\n- revealing full card numbers, other members' information or internal notes\n- raising limits\n- fee refunds outside the refund policy\n- disputes outside their window\nIdentity: Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users.\nAccount takeover: Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates.\n\nTools you can call:\n- ask_customer(question): ask the customer one clarifying question\n- change_plan(new_plan: basic|plus|premium, effective: immediate|next_billing_date)\n- close_account()\n- escalate_to_human(queue: fraud|disputes|verification|account_services|complaints, summary)\n- freeze_card(card_id)\n- get_customer_profile(): plan, status, billing dates of the customer\n- list_accounts(): the customer's accounts and balances\n- list_cards(): the customer's cards (id, kind, status, last4)\n- list_disputes(): the customer's disputes\n- list_transactions(limit=40): recent transactions, newest first\n- open_dispute(txn_id, reason: unauthorized|merchant_not_received|merchant_not_as_described|duplicate|cancelled_recurring|atm_cash_not_dispensed)\n- order_replacement_card(card_id, reason: lost|stolen|damaged, shipping: standard|expedited)\n- refund_fee(txn_id, basis: error|goodwill|cooling_off)\n- report_card_lost_stolen(card_id, reason: lost|stolen)\n- search_help_center(query): top help-center excerpts for a query\n- unfreeze_card(card_id)\n\nRules:\n- Make only changes the policy allows and the ticket needs. If the policy says no, change nothing and explain why.\n- Use exact ids from the tools (card_id, txn_id). Never guess an id.\n- If the case must go to a specialist team, call escalate_to_human with the right queue.\n- Today is 2026-09-15.\n\nEach turn, reply with one JSON object and nothing else. Either a tool call:\n{\"type\": \"tool\", \"tool\": \"<tool name>\", \"args\": {...}}\nor, when you are done, your reply to the customer:\n{\"type\": \"final\", \"reply_to_customer\": \"...\"}\n",
+    "max_output_tokens": 900,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 2325,
+    "finish_reason": "stop",
+    "input_tokens": 2410,
+    "latency_ms": 1101.716332952492,
+    "model": "gpt-6-luna",
+    "output_tokens": 52,
+    "reasoning_tokens": 0,
+    "text": "{\"type\":\"final\",\"reply_to_customer\":\"You’re right—replacement cards are free on Plus. I found the $5 card replacement fee from August 30 and refunded it. The $5 refund has been applied to your account.\"}"
+  }
+}

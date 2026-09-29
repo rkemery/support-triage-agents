@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_012.\n\nTicket from customer cus_012:\nI want to dispute a $210 charge from Orbital Home Decor from back in April, the rug they sent is nothing like the photos.\n\nIntake summary (dispute): The customer wants to dispute a $210 Orbital Home Decor charge because the rug received did not match the photos. The charge is from April, so it may be outside the dispute window.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 207,
+    "latency_ms": 1061.9332080241293,
+    "model": "gpt-6-luna",
+    "output_tokens": 41,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"Dispute a card purchase for merchandise not as described: eligibility, evidence requirements, and filing time limits\",\"Card transaction dispute deadlines and exceptions for purchases made months ago\"]}"
+  }
+}

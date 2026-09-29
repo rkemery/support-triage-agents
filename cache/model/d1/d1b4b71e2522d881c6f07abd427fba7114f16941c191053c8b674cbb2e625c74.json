@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_029.\n\nTicket from customer cus_029:\nWhy can't I send money?? My account says under review. Please remove that, I need to pay rent.\n\nIntake summary (verification): The customer wants to know why they cannot send money and asks for the account review restriction to be removed. Accounts under review and verification decisions must be escalated.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 194,
+    "latency_ms": 1123.865291941911,
+    "model": "gpt-6-luna",
+    "output_tokens": 38,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"account under review transfer restrictions why can't send money and review status\",\"escalating account reviews and verification decisions; can support remove an under-review restriction\"]}"
+  }
+}

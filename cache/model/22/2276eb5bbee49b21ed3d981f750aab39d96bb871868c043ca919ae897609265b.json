@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_005.\n\nTicket from customer cus_005:\nI want to cancel my plan.\n\nWe asked: Would you like to switch to the free plan or cancel your account?\nThe customer answered: She wants to move to the free plan, not close her account. She has been on Plus for over a year.\n\nIntake summary (plan): The customer wants to cancel their plan, but it is unclear whether they mean downgrade or end the plan entirely.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 214,
+    "latency_ms": 1211.8775841081515,
+    "model": "gpt-6-luna",
+    "output_tokens": 48,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"How to downgrade from Plus to the free plan, including eligibility and when the change takes effect\",\"Plus plan cancellation or downgrade steps, billing and refund rules, and whether account access or benefits change immediately\"]}"
+  }
+}

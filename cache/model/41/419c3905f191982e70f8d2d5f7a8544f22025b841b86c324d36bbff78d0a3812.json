@@ -1,0 +1,35 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_027.\n\nTicket from customer cus_027:\nI paid a guy $350 on BrookPay for concert tickets yesterday and now he's blocked me. Please get my money back.\n\nIntake summary (fraud): The customer reports being blocked by a seller after paying $350 for concert tickets and wants the payment reversed. This is a scam payment report and must be escalated to the Fraud team.",
+        "role": "user"
+      },
+      {
+        "content": "{\"queries\":[\"BrookPay scam payment sent to seller who blocked me concert tickets reversal refund dispute fraud escalation\",\"BrookPay unauthorized versus authorized scam payment recovery eligibility reporting deadlines $350\"],\"}",
+        "role": "assistant"
+      },
+      {
+        "content": "Your reply was not valid. Error: Unterminated string starting at: line 1 column 226 (char 225)\nReply again with one JSON object only, in the required shape.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 288,
+    "latency_ms": 1023.0138750048354,
+    "model": "gpt-6-luna",
+    "output_tokens": 37,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"BrookPay scam payment sent to seller who blocked me concert tickets reversal refund fraud escalation\",\"BrookPay scam payment recovery eligibility reporting deadlines authorized payment dispute\"]}"
+  }
+}

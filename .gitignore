@@ -19,7 +19,7 @@ htmlcov/
 .cache/
 
 # Scratch state from runs and demos (checkpoints, working bank databases)
-runs/
+/runs/
 
 # Local environment
 .env

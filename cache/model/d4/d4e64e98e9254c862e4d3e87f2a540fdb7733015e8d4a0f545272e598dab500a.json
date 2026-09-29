@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Customer profile: {\"cushion_enabled\": false, \"customer_id\": \"cus_009\", \"direct_deposit_last_30_days_usd\": 2733.0, \"first_paid_plan_charge_date\": null, \"full_name\": \"Keiko Brightwater\", \"joined_date\": \"2024-10-10\", \"kyc_status\": \"verified\", \"next_billing_date\": null, \"plan\": \"basic\", \"scheduled_plan_change\": null, \"status\": \"active\"}\n\nChannel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_009.\n\nTicket from customer cus_009:\nI just noticed a charge from June 12, $120 at Volta Electronics. I don't know what it is. Can you dispute it?",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the intake agent on the support team of Tallowbrook, a US neobank. You read a new ticket and classify it. You have no tools. You see the ticket and the customer's profile.\n\nThe support team's rules:\nSupport may:\n- freeze or unfreeze a card at the account holder's request (not a fraud lock)\n- report a card lost or stolen and order a replacement\n- open a dispute that is inside its window, has posted, and totals no more than the support dispute limit\n- refund a fee under the refund policy\n- change the member's plan\n- close an account that meets the closure requirements and has a $0.00 balance\n- explain policies and fees\nSupport must escalate (queue: cases):\n- fraud: suspected account takeover, fraud lock removal, scam payment reports\n- disputes: disputes above the support dispute limit\n- verification: verification decisions, legal name or date-of-birth changes, accounts under review or restricted\n- account_services: power of attorney, deceased account holder, customers describing financial abuse\n- complaints: formal complaints, legal threats, regulator complaints\nSupport must refuse:\n- acting for or sharing information with anyone who is not the account holder and has no legal authority on file\n- investment, tax or legal advice\n- revealing full card numbers, other members' information or internal notes\n- raising limits\n- fee refunds outside the refund policy\n- disputes outside their window\nIdentity: Support only acts for the verified account holder in their own signed-in session. There are no joint accounts or authorized users.\nAccount takeover: Suspected account takeover goes to the Fraud team. Support freezes the member's cards and escalates.\n\nReply with one JSON object and nothing else, in this shape:\n{\"category\": \"card\" | \"dispute\" | \"fee\" | \"plan\" | \"account\" | \"fraud\" | \"verification\" | \"complaint\" | \"other\",\n \"summary\": \"one or two sentences on what the customer wants\",\n \"needs_clarification\": true or false,\n \"clarifying_question\": \"the one question to ask the customer, or null\",\n \"risk_flags\": [\"short tags such as possible_fraud, third_party, must_escalate, outside_policy\"]}\n\nSet needs_clarification to true only when acting on the ticket as written would mean guessing which card, charge, fee, plan or account the customer means, or what they want done.\n",
+    "max_output_tokens": 400,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 672,
+    "latency_ms": 1193.0580419721082,
+    "model": "gpt-6-luna",
+    "output_tokens": 74,
+    "reasoning_tokens": 0,
+    "text": "{\"category\":\"dispute\",\"summary\":\"The customer wants to dispute a $120 charge at Volta Electronics dated June 12, which they do not recognize. The transaction year and whether it is posted are not specified, so eligibility cannot be determined from the ticket.\",\"needs_clarification\":false,\"clarifying_question\":null,\"risk_flags\":[]}"
+  }
+}

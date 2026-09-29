@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_002.\n\nTicket from customer cus_002:\nlost my card at a concert last night!! I fly out Friday so I need the new one fast. overnight it if you can\n\nIntake summary (card): The customer reports a lost card and wants it replaced quickly, preferably with overnight delivery before Friday.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 186,
+    "latency_ms": 1430.4821249097586,
+    "model": "gpt-6-luna",
+    "output_tokens": 41,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"lost or stolen debit card report, lock card, and order a replacement\",\"replacement card shipping options including expedited or overnight delivery, fees, eligibility, and delivery times\"]}"
+  }
+}

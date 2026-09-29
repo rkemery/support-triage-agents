@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_004.\n\nTicket from customer cus_004:\nCan you raise my daily ATM limit to $1,000 for tomorrow? I need cash for a used car.\n\nIntake summary (other): The customer wants their daily ATM withdrawal limit raised to $1,000 for tomorrow to buy a used car. Support cannot raise limits.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 1
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 190,
+    "latency_ms": 2349.9557500472292,
+    "model": "gpt-6-luna",
+    "output_tokens": 31,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"ATM daily withdrawal limit increase temporary request eligibility timing limits\",\"How to change or request a higher daily ATM withdrawal limit\"]}"
+  }
+}

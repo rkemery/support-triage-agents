@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_001.\n\nTicket from customer cus_001:\nhey can you switch me to Plus? want the higher savings rate\n\nIntake summary (plan): The customer wants to change from the Basic plan to Plus for the higher savings rate.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 171,
+    "latency_ms": 1161.503207986243,
+    "model": "gpt-6-luna",
+    "output_tokens": 35,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"How to upgrade from Basic to Plus plan, including eligibility, pricing, and effective date\",\"Plus plan savings rate and requirements to qualify\"]}"
+  }
+}

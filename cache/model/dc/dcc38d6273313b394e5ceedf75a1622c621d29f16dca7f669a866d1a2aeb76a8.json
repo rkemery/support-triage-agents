@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_030.\n\nTicket from customer cus_030:\nI'm Quentin's daughter and I hold power of attorney for him now. I need to set up his rent payments from this account. I have the POA documents ready.\n\nIntake summary (account): The customer says they are Quentin’s daughter and hold power of attorney, and wants to set up rent payments from his account. Support must escalate POA matters to account_services and cannot act for a third party without legal authority on file.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 221,
+    "latency_ms": 3927.7288330486044,
+    "model": "gpt-6-luna",
+    "output_tokens": 45,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"power of attorney (POA) documents account_services escalation requirements and process for an agent to manage an account\",\"third-party authority on file requirements for setting up rent payments on an account\"]}"
+  }
+}

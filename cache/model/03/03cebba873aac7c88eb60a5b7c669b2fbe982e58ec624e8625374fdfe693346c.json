@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_008.\n\nTicket from customer cus_008:\nSomeone took money out of my account by ACH. Can you get it back?\n\nIntake summary (fraud): The customer reports an unauthorized ACH withdrawal and wants the money returned. This may be fraud and should be escalated to the Fraud team.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 0
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 184,
+    "latency_ms": 10744.19954197947,
+    "model": "gpt-6-luna",
+    "output_tokens": 31,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"unauthorized ACH withdrawal dispute fraud report return funds timeline provisional credit\",\"ACH debit fraud escalation to Fraud team required steps\"]}"
+  }
+}

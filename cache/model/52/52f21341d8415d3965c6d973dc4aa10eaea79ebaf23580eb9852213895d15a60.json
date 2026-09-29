@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_009.\n\nTicket from customer cus_009:\nI just noticed a charge from June 12, $120 at Volta Electronics. I don't know what it is. Can you dispute it?\n\nWe asked: What year was the June 12 charge, and is it posted or still pending?\nThe customer answered: If offered, she doesn't want her card frozen or replaced. She thinks her son may have used it.\n\nIntake summary (dispute): The customer wants to dispute a $120 charge at Volta Electronics dated June 12. The year and whether the charge is posted are not specified, so dispute eligibility cannot be determined.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 2
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 252,
+    "latency_ms": 3215.6796669587493,
+    "model": "gpt-6-luna",
+    "output_tokens": 37,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"dispute card transaction eligibility posted vs pending time limits unauthorized charge family member authorized use\",\"card dispute process freeze or replace card optional suspected unauthorized transaction\"]}"
+  }
+}

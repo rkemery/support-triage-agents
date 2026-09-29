@@ -6,47 +6,45 @@ It is measured against a single agent with the same model, tools, docs and step 
 ## Results
 
 <!-- results:start -->
-> Rows marked "pending live run" need Azure model calls, which have not been made yet. Every number shown was produced offline by `make demo`, with no keys and no model calls.
-
 **Arms on the 50 tasks.** gpt-6-luna, reasoning effort none, the same tools, help-center snapshot and step budget (16 model calls) in every arm. Rates pool every trial and carry a 95% clustered Wilson interval with tasks as clusters. pass^k is the chance all k trials of a task succeed, averaged over tasks, with a bootstrap interval over tasks. Model seconds are the sum of a ticket's model-call latencies.
 
 | Arm | Success (pass^1) | pass^k | State match | Policy violations | Escalation precision | Escalation recall | $ per resolved ticket | Tokens per ticket | p50 / p95 model s | Ticket runs |
 |---|---|---|---|---|---|---|---|---|---|---|
-| A: single agent | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | |
-| B: full graph | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | |
-| C: graph without compliance reviewer | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | pending live run | |
+| A: single agent | 64.5% (52.9 to 74.6) | 44.0% (30.0 to 58.0), k=4 | 70.0% (58.7 to 79.3) | 9.0% (4.1 to 18.7) | 91.7% (66.5 to 98.4) | 55.0% (28.9 to 78.6) | $0.0004 ($0.0004 to $0.0006) | 4,472 | 3.9 / 9.9 | 200 |
+| B: full graph | 81.5% (70.8 to 88.9) | 68.0% (56.0 to 80.0), k=4 | 82.0% (71.2 to 89.4) | 0.0% (0.0 to 2.0) | 75.5% (48.9 to 90.9) | 92.5% (77.6 to 97.8) | $0.0017 ($0.0014 to $0.0021) | 13,769 | 11.6 / 30.8 | 200 |
+| C: graph without compliance reviewer | 82.0% (70.4 to 89.7) | 76.0% (64.0 to 88.0), k=2 | 84.0% (72.2 to 91.4) | 3.0% (0.8 to 11.2) | 67.9% (41.2 to 86.4) | 95.0% (72.4 to 99.3) | $0.0007 ($0.0006 to $0.0008) | 5,369 | 7.2 / 14.8 | 100 |
 | Do nothing (reference) | 26.0% (15.7 to 39.9) | n/a (deterministic) | 26.0% (15.7 to 39.9) | 0.0% (0.0 to 7.5) | n/a | 0.0% (0.0 to 33.9) | n/a (no model) | 0 | n/a | 50 |
 | Gold actions (reference) | 100.0% (92.5 to 100.0) | n/a (deterministic) | 100.0% (92.5 to 100.0) | 0.0% (0.0 to 7.5) | 100.0% (66.1 to 100.0) | 100.0% (66.1 to 100.0) | n/a (no model) | 0 | n/a | 50 |
 
 Success needs the gold end state, no policy violation, no plan rejected at review and a finished ticket. State match alone counts a ticket where a bank rule or the reviewer stopped a wrong action and the state stayed right. The two reference rows are policies computed by code through the same scorer: doing nothing is right on the 13 tasks whose gold resolution is to explain or decline, and replaying the gold actions is the ceiling.
 
-**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: pending live run.
+**Pre-registered hypothesis: the graph wins on policy violations, not on raw resolution.** Verdict: half right. The graph did cut policy violations, but it also resolved more tickets, so the "not on raw resolution" half was wrong. Policy violations, B minus A: -9.0 pts (p = 0.015). Success, B minus A: +17.0 pts (p = 0.009).
 
 **Paired comparisons**, trial t of one arm against trial t of the other on the same task, clustered by task (harness clustered paired t-test, with the minimum detectable effect at 80% power). The McNemar column uses trial 1 only, one independent pair per task.
 
 | Comparison | Metric | Difference, pts (95% CI) | p (clustered) | McNemar p, trial 1 | MDE, pts | Paired runs |
 |---|---|---|---|---|---|---|
-| B minus A | success | pending live run | pending live run | pending live run | | |
-| B minus A | policy_violation | pending live run | pending live run | pending live run | | |
-| B minus C | success | pending live run | pending live run | pending live run | | |
-| B minus C | policy_violation | pending live run | pending live run | pending live run | | |
+| B minus A | success | +17.0 (+4.5 to +29.5) | 0.009 | 0.004 | 17.9 | 200 |
+| B minus A | policy_violation | -9.0 (-16.1 to -1.9) | 0.015 | 0.062 | 10.2 | 200 |
+| B minus C | success | +0.0 (-7.0 to +7.0) | 1.000 | 1.000 | 10.0 | 100 |
+| B minus C | policy_violation | -3.0 (-7.5 to +1.5) | 0.182 | 0.500 | 6.3 | 100 |
 
 **Failure categories**, derived by code from the diff between the actions an arm tried and the gold actions. A ticket run can fall in more than one.
 
 | Category | A: single agent | B: full graph | C: graph without compliance reviewer |
 |---|---|---|---|
-| missing action | pending live run | pending live run | pending live run |
-| extra action | pending live run | pending live run | pending live run |
-| wrong arguments | pending live run | pending live run | pending live run |
-| wrong escalation | pending live run | pending live run | pending live run |
-| policy violation | pending live run | pending live run | pending live run |
-| incomplete | pending live run | pending live run | pending live run |
+| missing action | 34 of 200 | 27 of 200 | 10 of 100 |
+| extra action | 16 of 200 | 2 of 200 | 2 of 100 |
+| wrong arguments | 6 of 200 | 3 of 200 | 3 of 100 |
+| wrong escalation | 21 of 200 | 18 of 200 | 12 of 100 |
+| policy violation | 18 of 200 | 0 of 200 | 3 of 100 |
+| incomplete | 0 of 200 | 4 of 200 | 1 of 100 |
 
 **Checks that need no model.**
 
 - The SQLite bank reproduces the dataset's gold final state from the gold actions for 50 of 50 tasks. The dataset computed those states with its own reference model, so two implementations agree.
 - The Researcher's hybrid search matches the RAG repo's frozen top 8 chunks in the same order for 199 of 200 questions, and as a set for 200 of 200.
-- Second-model cross-check of the gold labels (gpt-5-mini): pending live run.
+- Second-model cross-check of the gold labels (gpt-5-mini): 38 of 50 agree. Disagreements, listed and not adjudicated: task-007, task-008, task-009, task-010, task-013, task-020, task-021, task-024, task-027, task-037, task-039, task-044.
 <!-- results:end -->
 
 ## Quickstart
@@ -149,15 +147,16 @@ Every model call goes through the same stack, outermost first: the harness `Cach
 - **A wrapper's type hint emptied the single agent's memory.** Model-calling nodes share a small wrapper that catches unparseable replies. Its `state` parameter was annotated with the graph's state type, and LangGraph reads a node's annotation as its input schema, so the single agent's node silently received none of its own keys and re-sent the opening message until the 16-call budget ran out. The scripted end-to-end run caught it (0 of 50 tickets finished). The wrapper now has no annotation, and a test runs every arm over all 50 tickets.
 - **BM25-only rankings can't be matched in order.** Many BM25 scores tie exactly, for example an old and a new version of an article that share every query term, and Qdrant breaks ties in its own internal order. On the 130 scored RAG test questions, the top-10 article order from this repo's BM25 matched the RAG repo's in 94 cases. Every mismatch was a tie. The hybrid ranking the Researcher uses is not affected in practice, so the tests compare BM25 on the top article and the top-10 set, and hybrid on exact order.
 - **Agents that didn't know where the ticket came from.** The first live smoke run (two tickets, one trial) failed arm B on the lost-card ticket for a setup reason. Nothing in any agent's context said the message came from the customer's own signed-in session, so the compliance reviewer sent back a correct plan because it couldn't confirm the session, then approved an empty plan telling the customer to sign in. Its other objection, that the card must be frozen before it is reported lost, was harmless: a reported card is cancelled for good, so freeze then report ends in the same bank state as report alone, in the dataset's reference model and in this bank, and the scorer counts either as a success. Every agent now gets the channel line, and the resolver gets the profile and the right to ask, which the single agent already had.
+- **The compliance reviewer didn't earn its cost here.** Removing it (arm C) left success unchanged (+0.0 pts, B minus C) and policy violations lower by 3.0 pts only, which is not significant (p = 0.18, with a minimum detectable effect of 6.3 pts at k=2). C costs less than half as much per resolved ticket. Most of the graph's gain over the single agent comes from splitting the work and from the resolver not being able to act without approval, not from the reviewer. It also escalates more readily, so its escalation precision is lower than the single agent's.
 - **Scoring on the end state alone.** An early draft of the scorer counted any ticket whose bank ended in the gold state. It would have scored a refused out-of-window dispute as a resolved ticket. That is now a test for every arm.
 
 ## Limitations
 
-- **No live results yet.** Every arm row reads "pending live run". Nothing in this README says how the agents perform.
 - **No human labels.** The tickets, gold actions and policies were written by an AI. The gold end states were computed by the dataset's bank model and agree with this repo's independent bank, and a second model (gpt-5-mini) cross-checks every task's resolution in the live run. Disagreements are listed, not adjudicated. No person has audited the tasks.
 - **50 tickets.** Intervals are wide and small differences are invisible. The minimum detectable effect is printed next to every comparison.
 - **A generous simulated customer.** Any clarifying question gets every hidden fact at once. A real customer might answer only what was asked. An LLM customer simulator was left out to keep replays exact.
 - **A perfect reviewer.** The oracle never errs, so this measures what reaches the reviewer, not how a tired person would judge it.
+- **One call refused by Azure's prompt filter.** In arm B, trial 1, task-013, Azure returned HTTP 400 ("prompt flagged as potentially violating our usage policy") for an ordinary support ticket. The ticket counts as a failure and was not retried with a changed prompt. Errors are not cached, so `make eval-replay` stops at that call. `make demo` renders everything from the committed records and needs no replay.
 - **A truncated reply breaks replay for its ticket.** The harness cache stores only complete replies, so a live reply cut off at `max_output_tokens` is used once and not cached, and `make eval-replay` stops with a cache miss on that call. The fix is to raise that role's output cap in `llm.py` and rerun live, where the cache covers everything else.
 - **Remaining differences between the arms.** The single agent can search the help center as often as it likes, while the graph's resolver works from the researcher's excerpts (up to 3 queries, 8 excerpts). The compliance reviewer sees only the records a plan points at, so it can't check an action that is missing against records nobody cited. Both follow from the plan's roles and were left as they are.
 - **One action per reply.** When a reply holds more than one JSON object (a tool call followed by a plan written before the tool answered), only the first counts.
@@ -183,7 +182,7 @@ At the day-1 capacities (20K tokens per minute on gpt-6-luna and gpt-5-mini) the
 
 `make eval-live` runs everything in one process under one hard cap of $3.00 (`make eval-live CAP=...` to change it), about three times the heavier-path estimate. A refused call stops the run, and cached calls cost nothing when it is started again.
 
-Actual spend: pending live run.
+Actual spend: $0.39 over 2,113 live calls in 2 run(s), from `DollarCap`.
 <!-- cost:end -->
 
 The run needs `AZURE_OPENAI_BASE_URL` and either `AZURE_OPENAI_API_KEY` or Entra ID (see `.env.example`). `make smoke-live` checks the live path on two tickets, one trial each, under a $0.25 cap. `make eval-live` runs arms A, B and C and the cross-check, then rewrites this README. Commit `results/` and `cache/` afterwards so `make eval-replay` and `make demo` reproduce it with no keys.

@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_011.\n\nTicket from customer cus_011:\nI ordered a lamp from Willowmade Goods on June 5th for $89.50 and it never showed up. They stopped answering my emails. Can you get my money back?\n\nIntake summary (dispute): The customer wants to recover $89.50 for a lamp ordered from Willowmade Goods on June 5th that was never delivered. They say the merchant has stopped responding.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 213,
+    "latency_ms": 924.1875000298023,
+    "model": "gpt-6-luna",
+    "output_tokens": 39,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"undelivered merchandise dispute chargeback eligibility time limits required documentation\",\"how to dispute a card purchase for goods not received merchant unresponsive and get a refund\"]}"
+  }
+}

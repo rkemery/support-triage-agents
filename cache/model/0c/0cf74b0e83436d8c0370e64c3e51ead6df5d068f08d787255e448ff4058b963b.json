@@ -1,0 +1,27 @@
+{
+  "request": {
+    "extra": {},
+    "input": [
+      {
+        "content": "Channel: in-app chat, sent from the signed-in, identity-verified app session of customer cus_009.\n\nTicket from customer cus_009:\nI just noticed a charge from June 12, $120 at Volta Electronics. I don't know what it is. Can you dispute it?\n\nIntake summary (dispute): The customer wants to dispute a $120 charge at Volta Electronics dated June 12, which they do not recognize. The transaction year and whether it is posted are not specified, so eligibility cannot be determined from the ticket.",
+        "role": "user"
+      }
+    ],
+    "instructions": "You are the research agent on the support team of Tallowbrook, a US neobank. You find the help-center policy that applies to a ticket. You can search the help center. You can't see account data.\n\nWrite 1 to 3 short search queries that would find the policies needed to resolve the ticket, such as fees, time windows, limits, eligibility and escalation rules.\n\nReply with one JSON object and nothing else: {\"queries\": [\"...\", \"...\"]}\n",
+    "max_output_tokens": 200,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "none",
+    "temperature": null,
+    "trial": 3
+  },
+  "response": {
+    "cached_input_tokens": 0,
+    "finish_reason": "stop",
+    "input_tokens": 215,
+    "latency_ms": 978.9844169281423,
+    "model": "gpt-6-luna",
+    "output_tokens": 41,
+    "reasoning_tokens": 0,
+    "text": "{\"queries\":[\"dispute an unrecognized card charge eligibility time limits and how to file\",\"dispute charge transaction must be posted pending charges\",\"unauthorized card transaction dispute escalation rules\"]}"
+  }
+}
